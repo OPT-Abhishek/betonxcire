@@ -1,0 +1,83 @@
+{%- for block in section.blocks -%}
+  {%- include 'section-double' -%}
+{%- endfor -%}
+
+{% schema %}
+  {
+    "name": "Double",
+    "class": "index-double",
+    "settings": [
+    ],
+    "blocks": [
+      {
+        "type": "section-double",
+        "name": "Double section",
+        "settings": [
+          {
+            "type": "header",
+            "content": "Layout"
+          },
+          {
+            "type": "checkbox",
+            "id": "text_block_first",
+            "label": "Text block first",
+            "default": false
+          },
+          {
+            "type": "header",
+            "content": "Image Block"
+          },
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image",
+            "info": "2000 x 1500px .jpg recommended"
+          },
+          {
+            "type": "header",
+            "content": "Text Block"
+          },
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Heading"
+          },
+          {
+            "type": "richtext",
+            "id": "richtext",
+            "label": "Text"
+          },
+          {
+            "type": "header",
+            "content": "Button"
+          },
+          {
+            "type": "url",
+            "id": "btn_link",
+            "label": "Link"
+          },
+          {
+            "type": "text",
+            "id": "btn_text",
+            "label": "Text"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Double",
+        "category": "Image",
+        "blocks": [
+          {
+            "type": "section-double"
+          },
+          {
+            "type": "section-double"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

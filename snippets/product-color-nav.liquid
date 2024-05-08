@@ -1,0 +1,56 @@
+<!-- /snippets/product-color-nav.liquid -->
+
+{%- assign primary_product = false -%}
+{%- assign product_color = false -%}
+{%- for tag in product.tags -%}
+  {%- if tag contains "Product: " -%}
+    {%- assign primary_product = tag | remove: "Product: " -%}
+  {%- endif -%}
+  {%- if tag contains "Color: " -%}
+    {%- assign product_color = tag | remove: "Color: " -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{%- if primary_product -%}
+  <div class="swatch-wrapper swatch-wrapper--color">
+    <div class="swatch">
+      <div class="swatch__label">
+        Color{% if product_color %}: <span class="swatch__label__value">{{ product_color }}</span>{% endif %}
+      </div>
+
+      {%- for link in linklists.products-colors.links -%}
+        {%- if link.title == primary_product -%}
+          <ul class="swatch__list">
+            {%- for product_link in link.links -%}
+              {%- if product_link.type == 'product_link' -%}
+                {%- assign product_obj = product_link.object -%}
+                {%- assign color_title = false -%}
+
+                {%- for tag in product_obj.tags -%}
+                  {%- if tag contains "Color: " -%}
+                    <!-- {{ tag }} -->
+                    {%- assign color_title = tag | remove: "Color: " -%}
+                  {%- endif -%}
+                {%- endfor -%}
+
+                <li class="swatch__item{% if product.handle == product_obj.handle %} active{% endif %}">
+                  <a
+                   href="{{ product_link.url }}"
+                   class="swatch__link swatch__link--color"
+                   title="{{ product_link.title | escape }}"
+                   {% unless color_title == false %}
+                     data-color="{{ color_title }}"
+                   {% endunless %}>
+                    <span class="swatch__link__color"></span>
+                    <span class="swatch__link__text">{{ product_link.title | escape }}</span>
+                  </a>
+                </li>
+              {%- endif -%}
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </div>
+{%- endif -%}
+

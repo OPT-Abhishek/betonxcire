@@ -1,0 +1,70 @@
+<section class="section-newsletter">
+  <div class="section-body {{ section.settings.bg_color }}">
+    <div class="wrapper">
+      <div class="medium-up--one-half medium-up--push-one-quarter small--five-sixths small--push-one-twelfth {{ section.settings.text_align }}">
+        {% if section.settings.title != '' %}
+          <h2 class="section-title text-center">{{ section.settings.title | escape }}</h2>
+        {% endif %}
+        {% if section.settings.richtext != blank %}
+          <div class="rte rte--homepage">
+            {{ section.settings.richtext }}
+          </div>
+        {% endif %}
+        {% include 'form-newsletter' %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "Newsletter",
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Newsletter"
+      },
+      {
+        "id": "richtext",
+        "type": "richtext",
+        "label": "Subheading",
+        "default": "<p>Join to get special offers, free giveaways, and once-in-a-lifetime deals.</p>"
+      },
+      {
+        "type": "select",
+        "id": "text_align",
+        "label": "Text alignment",
+        "default": "text-center",
+        "options": [
+          { "value": "text-left", "label": "Align Left"},
+          { "value": "text-center", "label": "Align Center"},
+          { "value": "text-right", "label": "Align Right"}
+        ]
+      },
+      {
+        "type": "select",
+        "id": "bg_color",
+        "label": "Background color",
+        "default": "bg--light",
+        "options": [
+          { "value": "bg--white", "label": "White"},
+          { "value": "bg--light", "label": "Light"},
+          { "value": "bg--splash", "label": "Accent"},
+          { "value": "bg--dark", "label": "Dark"}
+        ]
+      },
+      {
+        "type": "paragraph",
+        "content": "Subscribers are under 'Accepts Marketing' in your [customer admin](/admin/customers)."
+      }
+    ],
+    "presets": [
+      {
+        "name": "Newsletter",
+        "category": "Promotional"
+      }
+    ]
+  }
+{% endschema %}

@@ -1,0 +1,78 @@
+{% comment %}
+  https://www.sitelocity.com/critical-path-css-generator
+{% endcomment %}
+
+<!-- Critical CSS -->
+<style>
+  html,body{margin:0;padding:0;}.visually-hidden{position:absolute !important;overflow:hidden;clip:rect(0 0 0 0);height:1px;width:1px;margin:-1px;padding:0;border:0}
+
+  *, input, :before, :after {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+  }
+  /*body.loading {overflow: hidden; }*/
+  body.loading .wrapper { padding: 0 15px; }
+  @media only screen and (min-width: 480px) {
+    .wrapper { padding: 0 30px; }
+  }
+
+  body.loading .info-bar{height:42px; background-color:#000; color:#fff; text-align:center; line-height:42px; overflow:hidden; }
+  body.loading .info-bar__message p {margin:0; font-size:.9em; }
+  body.loading .site-header{height:73px;opacity:0;overflow:hidden;}
+  body.loading .header--fixed {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    background-color: #fff;
+    border-bottom: 1px solid #000;
+  }
+  body.loading .header-search{display: none;}
+
+  /*
+  body.loading .site-footer {
+    height: 440px;
+    background-color: #dbc8b6;
+    color: #111;
+  }
+  body.loading .site-footer *,
+  body.loading .popup {
+    opacity: 0;
+  }
+  */
+  body.loading .popup,
+  body.loading .svg-wrapper {
+    display:none;
+  }
+
+  {% if template == 'index' %}
+    body.loading .section-slideshow {background-color: #dadada; }
+    body.loading .section-slideshow.use_screen_two_thirds { height: 66vh; }
+    body.loading .section-slideshow.use_screen_full { height: 100vh; }
+    body.loading .section-slideshow * { margin:0; visibility:hidden; }
+    body.loading .section-collection .collection__cta__wrap {
+      margin: 0;
+      padding-bottom: 50%;
+      background-color: #fafafa;
+    }
+    @media only screen and (min-width: 480px) {
+      body.loading .section-collection .collection__cta__wrap {
+        padding-bottom: 150%;
+      }
+    }
+    /*body.loading .main-content .shopify-section:not(first-of-type) { opacity: 0; }*/
+  {% elsif template == 'collection' %}
+    body.loading .main-content { opacity: 0; }
+    .product-grid-item .grid__image {
+      display: block;
+      padding-bottom: 150%;
+      background-color: #fafafa;
+    }
+  {% else %}
+    body.loading .main-content { opacity: 0; }
+  {% endif %}
+  {% comment %}
+  {% endcomment %}
+
+</style>

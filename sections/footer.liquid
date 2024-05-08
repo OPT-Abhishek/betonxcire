@@ -1,0 +1,239 @@
+<footer
+ class="site-footer"
+ role="contentinfo"
+ data-section-type="footer"
+ data-section-id="{{ section.id }}">
+  <div class="wrapper">
+    <div class="grid grid--rev">
+      <div class="grid__item medium-up--one-half">
+        <div class="footer__right">
+          <div class="footer__logo">
+            <a href="{{ shop.secure_url }}">
+              {% include 'logo-bc' %}
+            </a>
+          </div>
+
+          {%- if section.settings.footer_social_enable -%}
+            <div class="footer__social">
+              {%- include 'social-icons' -%}
+            </div>
+          {%- endif -%}
+
+          <div class="footer__newsletter">
+            <h4 class="footer__title h6">
+              Exclusive: Get 10% off on your first order!
+            </h4>
+
+            <div class="rte">
+              <p>Sign up and let’s keep in touch!</p>
+            </div>
+            {% include 'form-newsletter' %}
+          </div>
+        </div>
+      </div>
+
+      <div class="grid__item medium-up--one-half">
+        <div class="footer__left">
+          <div class="grid grid--uniform">
+
+            {% case section.blocks.size %}
+              {% when 0 %}
+              {% when 1 %}
+                {% assign footer_column_width = 'small-up--one-half medium-up--push-one-quarter' %}
+              {% when 2 %}
+                {% assign footer_column_width = 'small-up--one-half' %}
+              {% when 3 %}
+                {% assign footer_column_width = 'small-up--one-third' %}
+              {% when 4 %}
+                  {% assign footer_column_width = 'one-quarter' %}
+            {% endcase %}
+
+            {% for block in section.blocks %}
+              {% case block.type %}
+
+                {% when 'linklist' %}
+                  {%- assign title = block.settings.title -%}
+                  {%- assign linklist = linklists[block.settings.linklist] -%}
+                  {%- if title == blank -%}
+                    {%- assign title = linklist.title -%}
+                  {%- endif -%}
+                  <div class="grid__item {{ footer_column_width }} footer__block" {{ block.shopify_attributes }}>
+                    <h4 class="footer__title h6">{{ title | escape }}</h4>
+
+                    <ul class="footer__nav__list">
+                      {%- for link in linklist.links -%}
+                        <li class="footer__nav__item">
+                          <a class="footer__nav__link" href="{{ link.url }}">{{ link.title }}</a>
+                        </li>
+                      {%- endfor -%}
+                    </ul>
+                  </div>
+
+                {% when 'page' %}
+                  {% assign page = pages[block.settings.page] %}
+                  {% if page == blank or page.empty? %}
+                    <div class="grid__item {{ footer_column_width }} footer__block" {{ block.shopify_attributes }}>
+                      <h4 class="footer__title h6">{{ shop.name }}</h4>
+
+                      <div class="rte">{{ 'home_page.onboarding.no_content' | t }}</div>
+                  </div>
+                  {% else %}
+                    <div class="grid__item {{ footer_column_width }} footer__block" {{ block.shopify_attributes }}>
+                      <p class="footer__title h6">{{ page.title | escape }}</p>
+
+                      <div class="rte">{{ page.content }}</div>
+                    </div>
+                  {% endif %}
+
+                {% when 'text' %}
+                  <div class="grid__item {{ footer_column_width }} footer__block" {{ block.shopify_attributes }}>
+                    <h4 class="footer__title h6">{{ block.settings.title | escape }}</h4>
+
+                    <div class="rte">{{ block.settings.text }}</div>
+                  </div>
+
+                {% else %}
+              {% endcase %}
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {%- capture footer_payment -%}
+      <div class="footer__payment">
+        <ul class="payment-icons inline-list">
+          {%- for type in shop.enabled_payment_types -%}
+            <li>
+              {{ type | payment_type_svg_tag: class:'payment-icon' }}
+              <span class="visually-hidden">{{ type | capitalize | replace: '_', ' ' }}</span>
+            </li>
+          {%- endfor -%}
+        </ul>
+      </div>
+    {%- endcapture -%}
+
+    {%- assign secondary_col_class = 'one-full' -%}
+    {%- if section.settings.footer_payment_enable -%}
+      {%- assign secondary_col_class = 'medium-up--one-half' -%}
+    {%- endif -%}
+
+    <div class="footer__secondary">
+      <div class="grid grid--rev">
+        {%- if section.settings.footer_payment_enable and shop.enabled_payment_types != empty-%}
+          <div class="grid__item {{ secondary_col_class }}">
+            <div class="footer__right medium-up--text-right">
+              {{ footer_payment }}
+            </div>
+          </div>
+        {%- endif -%}
+
+        <div class="grid__item {{ secondary_col_class }}">
+          <div class="footer__left">
+            <ul class="footer__nav__list inline-list">
+              <li class="footer__nav__item">
+                <span>{{ 'now' | date: "%Y" }} &copy; Copyright {{ shop.name }}</span>
+              </li>
+              {%- for link in linklists[section.settings.footer_secondary_linklist].links -%}
+                <li class="footer__nav__item">
+                  <a class="footer__nav__link" href="{{ link.url }}">{{ link.title }}</a>
+                </li>
+              {%- endfor -%}
+
+              <li class="footer__nav__item">
+                <span class="footer__nav__link" footer-credits-toggle>Site Credits</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer__credits" footer-credits>
+    <div class="wrapper">
+      <span footer-credits-toggle>{% include 'icon-close' %}</span>
+      <ul>
+        <li>UX + Web Design + Development: <a href="https://willwong.hk?ref=betonxcire" target="_blank">Will Wong Co</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+{% schema %}
+  {
+    "name": "Footer",
+    "max_blocks": 4,
+    "settings": [
+      {
+        "type": "header",
+        "content": "Bottom bar"
+      },
+      {
+        "type": "link_list",
+        "id": "footer_secondary_linklist",
+        "label": "Link List",
+        "info": "This menu won't show dropdown items"
+      },
+      {
+        "type": "checkbox",
+        "id": "footer_payment_enable",
+        "label": "Show payment types"
+      },
+      {
+        "type": "checkbox",
+        "id": "footer_social_enable",
+        "label": "Show social icons"
+      }
+    ],
+    "blocks" : [
+      {
+        "type": "linklist",
+        "name": "Link list",
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading"
+          },
+          {
+             "type": "link_list",
+             "id": "linklist",
+             "label": "Link list",
+             "default": "main-menu",
+             "info": "This menu won't show dropdown items"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "name": "Text",
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Text column"
+          },
+          {
+            "type": "richtext",
+            "id": "text",
+            "label": "Text",
+            "default": "<p>Share store details, promotions, or brand content with your customers.</p>"
+          }
+        ]
+      },
+      {
+        "type": "page",
+        "name": "Page",
+        "settings": [
+          {
+            "id": "page",
+            "type": "page",
+            "label": "Page"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

@@ -1,0 +1,31 @@
+<!-- /snippets/account-popup.liquid -->
+
+<div
+ class="popup account-popup"
+ data-section-type="account-popup"
+ data-section-id="account-popup">
+  <div class="popup__overlay" data-popup-close></div>
+
+  <div class="popup__wrapper">
+    <span class="popup__close" data-popup-close>
+      <span class="popup__close__icon">{%- include 'icon-close' -%}</span>
+    </span>
+
+    <div class="popup__body text-left">
+      {% include 'account-customers-login' %}
+    </div>
+
+    {%- comment -%}
+    <div class="popup__header">
+      <h4 class="h2 text-center">My BC Account</h4>
+
+      <p class="svg-wrapper text-center">
+        {%- include 'logo-rames' -%}
+      </p>
+    </div>
+
+    <div class="popup__body text-left">
+    </div>
+    {%- endcomment -%}
+  </div>
+</div>

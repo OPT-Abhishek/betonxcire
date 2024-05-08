@@ -1,0 +1,65 @@
+{%- capture cart_contnet -%}
+  <span class="popup__close" data-popup-close>
+    <span class="popup__close__icon">{%- include 'icon-close' -%}</span>
+  </span>
+
+  {%- if cart.item_count == 0 -%}
+    <div class="popup__header">
+      {%- if template == 'cart' -%}
+        <h1 class="h2 text-center">{{ 'cart.general.title' | t }}</h1>
+      {%- else -%}
+        <h4 class="h2 text-center">{{ 'cart.general.title' | t }}</h4>
+      {%- endif -%}
+
+      <p class="svg-wrapper text-center">
+        {%- include 'logo-rames' -%}
+      </p>
+    </div>
+
+    <div class="popup__body--empty">
+      <div class="text-center">
+        <p>{{ 'cart.general.empty' | t }}</p>
+
+        <a href="{{ section.settings.cart_continue_browsing | default: '/collections/all' }}" class="btn btn--large btn--white uppercase">{{ 'cart.general.continue_browsing_html' | t }}</a>
+
+        <p>
+          <a href="{{ section.settings.cart_continue_browsing | default: '/collections/all' }}" class="uppercase">Continue Shopping</a>
+        </p>
+      </div>
+    </div>
+  {%- else -%}
+    {%- include 'cart-form' with type: 'ajax' -%}
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- if template == 'cart.ajax' -%}
+  {{ cart_contnet }}
+{%- elsif template == 'cart' -%}
+  <div class="section-body">
+    <div class="wrapper">
+      <form
+       class="cart{% if template == 'cart' %} in cart-page{% else %} cart-modal{% endif %}"
+       data-section-type="cart"
+       data-ajax-cart
+       action="/cart"
+       method="post" novalidate>
+        <div class="popup__wrapper" data-ajax-cart-wrapper>
+          {{ cart_contnet }}
+        </div>
+      </form>
+    </div>
+  </div>
+{%- else -%}
+  <form
+   class="cart{% if template == 'cart' %} in cart-page{% else %} popup cart-modal{% endif %}"
+   data-section-type="cart"
+   data-ajax-cart
+   action="/cart"
+   method="post" novalidate>
+    <div class="popup__overlay" data-popup-close></div>
+
+    <div class="popup__wrapper" data-ajax-cart-wrapper>
+      {{ cart_contnet }}
+    </div>
+  </form>
+{%- endif -%}

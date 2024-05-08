@@ -1,0 +1,104 @@
+<!-- /snippets/breadcrumb.liquid -->
+{% comment %}
+  Documentation - http://docs.shopify.com/support/your-website/navigation/creating-a-breadcrumb-navigation
+{% endcomment %}
+
+{%- unless template == 'index' or template == 'cart' -%}
+  <nav class="breadcrumb" role="navigation" aria-label="breadcrumbs">
+    <ul class="breadcrumb__list">
+
+      {%- if template.name == 'product' or template.name == 'collection' -%}
+        <li class="breadcrumb__item">
+          <span>Shop</span>
+        </li>
+      {%- else -%}
+        {%- comment -%}
+          <li class="breadcrumb__item">
+            <a href="/" title="{{ 'general.breadcrumbs.home_link_title' | t }}">{{ 'general.breadcrumbs.home' | t }}</a>
+          </li>
+        {%- endcomment -%}
+      {%- endif -%}
+
+      {%- if template.suffix contains 'lookbook.' -%}
+        <li class="breadcrumb__item">
+          <a href="/pages/lookbook" title="Lookbook">Lookbook</a>
+        </li>
+      {%- endif -%}
+
+      {%- if template contains 'product' -%}
+
+        {%- if collection and collection.handle -%}
+          {% capture url %}/collections/{{ collection.handle }}{% endcapture %}
+          <li class="breadcrumb__item">
+            {{ collection.title | link_to: url }}
+          </li>
+        {%- endif -%}
+
+        <li class="breadcrumb__item">
+          <span>{{ product.title }}</span>
+        </li>
+
+      {%- elsif template contains 'collection' and collection.handle -%}
+
+        {%- if current_tags -%}
+          {% capture url %}/collections/{{ collection.handle }}{% endcapture %}
+          <li class="breadcrumb__item">
+            {{ collection.title | link_to: url }}
+          </li>
+
+          <li class="breadcrumb__item">
+            <span>{{ current_tags | join: " + " | remove: 'Color: ' }}</span>
+          </li>
+        {%- else -%}
+          <li class="breadcrumb__item">
+            <span>{{ collection.title }}</span>
+          </li>
+        {%- endif -%}
+
+      {%- elsif template == 'blog' -%}
+
+        {%- if current_tags -%}
+          <li class="breadcrumb__item">
+            {{ blog.title | link_to: blog.url }}
+          </li>
+          <li class="breadcrumb__item">
+            <span>{{ current_tags | join: " + " }}</span>
+          </li>
+        {%- else -%}
+          <li class="breadcrumb__item">
+            <span>{{ blog.title }}</span>
+          </li>
+        {%- endif -%}
+
+      {%- elsif template == 'article' -%}
+
+        <li class="breadcrumb__item">
+          {{ blog.title | link_to: blog.url }}
+        </li>
+
+        <li class="breadcrumb__item">
+          <span>{{ article.title }}</span>
+        </li>
+
+      {%- elsif template contains 'page' -%}
+
+        {%- if template.suffix contains 'lookbook-' -%}
+          <li class="breadcrumb__item">
+            <a href="/pages/lookbook" title="Lookbook page">Lookbook</a>
+          </li>
+        {%- endif -%}
+
+        <li class="breadcrumb__item">
+          <span>{{ page.title }}</span>
+        </li>
+
+      {%- else -%}
+
+        <li class="breadcrumb__item">
+          <span>{{ page_title }}</span>
+        </li>
+
+      {%- endif -%}
+    </ul>
+  </nav>
+{%- endunless -%}

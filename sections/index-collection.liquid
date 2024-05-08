@@ -1,0 +1,120 @@
+{%- assign collection = collections[section.settings.collection] -%}
+
+{% case section.settings.grid %}
+  {% when 1 %}
+    {% assign grid_width_large = 'medium-up--one-third medium-up--push-one-third clear' %}
+    {% assign grid_width_medium = 'small--one-half small--push-one-quarter clear' %}
+    {% assign grid_width_small = 'mobile--one-whole' %}
+  {% when 2 %}
+    {% assign grid_width_large = 'medium-up--one-half' %}
+    {% assign grid_width_medium = 'small--one-half' %}
+    {% assign grid_width_small = 'mobile--one-half' %}
+  {% when 3 %}
+    {% assign grid_width_large = 'medium-up--one-third' %}
+    {% assign grid_width_medium = 'small--one-third' %}
+    {% assign grid_width_small = 'mobile--one-whole' %}
+  {% when 4 %}
+    {% assign grid_width_large = 'medium-up--one-quarter' %}
+    {% assign grid_width_medium = 'small--one-half' %}
+    {% assign grid_width_small = 'mobile--one-half' %}
+  {% when 5 %}
+    {% assign grid_width_large = 'medium-up--one-fifth' %}
+    {% assign grid_width_medium = 'small--one-third' %}
+    {% assign grid_width_small = 'mobile--one-half' %}
+  {% when 6 %}
+    {% assign grid_width_large = 'medium-up--one-sixth' %}
+    {% assign grid_width_medium = 'small--one-third' %}
+    {% assign grid_width_small = 'mobile--one-half' %}
+  {% else %}
+    {% assign grid_width_large = 'medium-up--one-quarter' %}
+    {% assign grid_width_medium = 'small--one-half' %}
+    {% assign grid_width_small = 'mobile--one-half' %}
+{% endcase %}
+
+{%- assign product_limit = section.settings.grid | times: section.settings.rows -%}
+
+<section class="section-collection">
+  <div class="section-body {{ section.settings.bg_color }}">
+    <div class="wrapper">
+      {% if section.settings.title != blank %}
+        <h4 class="section-title text-center">{{ section.settings.title | escape }}</h4>
+      {% endif %}
+      <div class="grid grid--uniform">
+        {% for product in collection.products  limit: product_limit %}
+          {% include 'product-grid-item' %}
+        {% else %}
+          {% include 'onboarding-featured-products' %}
+        {% endfor %}
+      </div>
+      {% if section.settings.show_view_all %}
+        <div class="text-center">
+          <a href="{{ collection.url }}" class="btn btn--clear uppercase">
+            {{ 'collections.general.view_all' | t }}
+          </a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "Featured collection",
+    "class": "index-collection",
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Featured Products"
+      },
+      {
+        "id": "collection",
+        "type": "collection",
+        "label": "Collection"
+      },
+      {
+        "type":    "range",
+        "id":      "grid",
+        "min":     1,
+        "max":     6,
+        "step":    1,
+        "label":   "Products per row",
+        "default": 3
+      },
+      {
+        "type":    "range",
+        "id":      "rows",
+        "min":     1,
+        "max":     8,
+        "step":    1,
+        "label":   "Number of rows",
+        "default": 1
+      },
+      {
+        "type": "select",
+        "id": "bg_color",
+        "label": "Background color",
+        "default": "bg--white",
+        "options": [
+          { "value": "bg--white", "label": "White"},
+          { "value": "bg--light", "label": "Light"},
+          { "value": "bg--splash", "label": "Accent"},
+          { "value": "bg--dark", "label": "Dark"}
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "show_view_all",
+        "label": "Show 'View all' button",
+        "default": false
+      }
+    ],
+    "presets": [
+      {
+        "name": "Featured collection",
+        "category": "Collection"
+      }
+    ]
+  }
+{% endschema %}

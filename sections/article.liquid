@@ -1,0 +1,257 @@
+<!-- /sections/article.liquid -->
+{%- assign number_of_comments = article.comments_count -%}
+
+{%- comment -%}
+  If a comment was just submitted and it has no blank fields, we have an extra comment to count.
+{%- endcomment -%}
+
+{%- if comment and comment.created_at -%}
+  {%- assign number_of_comments = article.comments_count | plus: 1 -%}
+{%- endif -%}
+
+
+{%- assign tags = section.settings.tags -%}
+{%- assign social = section.settings.social -%}
+
+<section
+ class="section-article"
+ data-section-id="{{ section.id }}"
+ data-section-type="parallax">
+  <div class="article__header">
+    <div class="wrapper">
+      {% include 'breadcrumb' %}
+
+      <div class="text-center">
+        <div class="article__logo">
+          <div class="svg-wrapper">
+            {% include 'logo-rames' %}
+          </div>
+        </div>
+
+        <p class="article__date">{{ article.published_at | date: format: 'month_day_year' }}</p>
+
+        {%- if tags -%}
+          {%- include 'article-tags' -%}
+        {%- endif -%}
+
+        <h1 class="article__title h2">{{ article.title }}</h1>
+      </div>
+    </div>
+  </div>
+
+  {%- if article.image -%}
+    {%- include 'section-banner-image' with
+      section_id: article.id,
+      image: article.image,
+      image_mobile: false,
+      height: section.settings.image_height,
+      overlay_opacity: 0,
+      parallax: section.settings.parallax,
+      title: '',
+      richtext: '',
+      text_align: 'text-center',
+      text_color: 'color--white',
+      btn_text: '',
+      btn_link: '',
+      btn_style: '' -%}
+  {%- endif -%}
+
+  <div class="section-body">
+    <div class="wrapper">
+      <div class="grid">
+        <article class="grid__item medium-up--two-thirds medium-up--push-one-sixth">
+          <div>
+            <div class="article__content rte">
+              {{ article.content }}
+            </div>
+
+            {%- if social -%}
+              {%- include 'social-sharing', share_title: article.title, share_permalink: article.url, share_image: article.image -%}
+            {%- endif -%}
+          </div>
+
+          {%- if blog.next_article or blog.previous_article -%}
+            <p class="clearfix">
+              {%- if blog.previous_article -%}
+                <span class="left">
+                  <a
+                   href="{{ blog.previous_article }}"
+                   class="text-link--grey text-link--arrow-prev uppercase">
+                    {{ 'blogs.article.older_post' | t }}
+                  </a>
+                </span>
+              {%- endif -%}
+
+              {%- if blog.next_article -%}
+                <span class="right">
+                  <a
+                   href="{{ blog.next_article }}"
+                   class="text-link--grey text-link--arrow-next uppercase">
+                    {{ 'blogs.article.newer_post' | t }}
+                  </a>
+                </span>
+              {%- endif -%}
+            </p>
+          {%- endif -%}
+
+
+          {%- if blog.comments_enabled? -%}
+            <hr class="hr--clear">
+
+            {%- if article.comments_count > 0 -%}
+              <p class="uppercase h4">{{ 'blogs.comments.comments_with_count' | t: count: number_of_comments }}</p>
+            {%- endif -%}
+
+            <hr class="hr--clear">
+
+            {%- comment -%}
+              Just like blog.liquid page, define how many comments should be on each page.
+            {%- endcomment -%}
+            {%- paginate article.comments by 5 -%}
+              {%- comment -%}
+                #Comments is required, it is used as an anchor link by Shopify.
+              {%- endcomment -%}
+
+              <div id="Comments">
+                {%- if comment and comment.created_at -%}
+                  <p class="note form-success">
+                    {%- if blog.moderated? -%}
+                      {{ 'blogs.comments.success_moderated' | t }}
+                    {%- else -%}
+                      {{ 'blogs.comments.success' | t }}
+                    {%- endif -%}
+                  </p>
+                {%- endif -%}
+
+                {%- if number_of_comments > 0 -%}
+                  <ul>
+                    {%- comment -%}
+                      If a comment was just submitted with no blank field, show it.
+                    {%- endcomment -%}
+                    {%- if comment and comment.created_at -%}
+                      <li id="{{ comment.id }}" class="comment first{%- if article.comments_count == 0 -%} last{%- endif -%}">
+                        {%- include 'comment' -%}
+                      </li>
+                    {%- endif -%}
+
+                    {%- comment -%}
+                      Showing the rest of the comments.
+                    {%- endcomment -%}
+                    {%- for comment in article.comments -%}
+                      <li id="{{ comment.id }}" class="comment{%- unless number_of_comments > article.comments_count -%}{%- if forloop.first -%} first{%- endif -%}{%- endunless -%}{%- if forloop.last -%} last {%- endif -%}">
+                        {%- include 'comment' -%}
+                      </li>
+                    {%- endfor -%}
+                  </ul>
+
+                  {%- if paginate.pages > 1 -%}
+                    <hr class="hr--clear">
+
+                    <div class="text-center">
+                      {%- include 'pagination' -%}
+                    </div>
+                  {%- endif -%}
+
+                  <hr class="hr--clear">
+                {%- endif -%}
+
+                {%- comment -%}
+                  Comment submission form
+                {%- endcomment -%}
+                {%- form 'new_comment', article -%}
+
+                  {%- comment -%}
+                    #AddCommentTitle is used simply as an anchor link
+                  {%- endcomment -%}
+                  <p class="uppercase h4" id="AddCommentTitle">{{ 'blogs.comments.title' | t }}</p>
+
+                  {{ form.errors | default_errors }}
+
+                  <div class="grid">
+                    <div class="grid__item medium-up--one-half">
+                      <label for="CommentAuthor" class="label--hidden">{{ 'blogs.comments.name' | t }}</label>
+                      <input {%- if form.errors contains "author" -%} class="error"{%- endif -%} type="text" name="comment[author]" placeholder="{{ 'blogs.comments.name' | t }}" id="CommentAuthor" value="{{ form.author }}" autocapitalize="words">
+
+                      <label for="CommentEmail" class="label--hidden">{{ 'blogs.comments.email' | t }}</label>
+                      <input {%- if form.errors contains "email" -%} class="error"{%- endif -%} type="email" name="comment[email]" placeholder="{{ 'blogs.comments.email' | t }}" id="CommentEmail" value="{{ form.email }}" autocorrect="off" autocapitalize="off">
+                    </div>
+
+                    <div class="grid__item">
+                      <label for="CommentBody" class="label--hidden">{{ 'blogs.comments.message' | t }}</label>
+                      <textarea {%- if form.errors contains "body" -%} class="error"{%- endif -%} name="comment[body]" id="CommentBody" placeholder="{{ 'blogs.comments.message' | t }}">{{ form.body }}</textarea>
+                    </div>
+                  </div>
+
+                  {%- if blog.moderated? -%}
+                    <p>{{ 'blogs.comments.moderated' | t }}</p>
+                  {%- endif -%}
+
+                  <input type="submit" class="btn uppercase" value="{{ 'blogs.comments.post' | t }}">
+
+                  {%- comment -%}
+                    Assign variable to be used after timber.init() is run in theme.liquid
+                  {%- endcomment -%}
+                  {%- if form.errors -%}
+                    {%- assign newHash = 'AddCommentTitle' -%}
+                  {%- endif -%}
+
+                  {%- if form.posted_successfully? -%}
+                    {%- assign newHash = 'Comments' -%}
+                  {%- endif -%}
+
+                {%- endform -%}
+
+              </div>
+            {%- endpaginate -%}
+          {%- endif -%}
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+{% schema %}
+  {
+    "name": "Article",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Article"
+      },
+      {
+        "type": "checkbox",
+        "id": "tags",
+        "label": "Show article tags"
+      },
+      {
+        "type": "checkbox",
+        "id": "social",
+        "label": "Show social sharing"
+      },
+      {
+        "type": "header",
+        "content": "Featured Image"
+      },
+      {
+        "type": "select",
+        "id": "image_height",
+        "label": "Image height",
+        "options": [
+          { "value": "use_image", "label": "Image height"},
+          { "value": "use_screen_two_thirds", "label": "Tall"},
+          { "value": "use_screen_one_half", "label": "Medium"},
+          { "value": "use_screen_one_third", "label": "Short"},
+          { "value": "use_screen_one_fifth", "label": "Tiny"}
+        ],
+        "default": "use_image"
+      },
+      {
+        "type": "checkbox",
+        "id": "parallax",
+        "default": true,
+        "label": "Enable parallax scroll"
+      }
+    ]
+  }
+{% endschema %}

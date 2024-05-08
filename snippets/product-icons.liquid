@@ -1,0 +1,66 @@
+{%- liquid
+  assign features = product.metafields.custom.features
+  assign features_size = features | split: ',' | size
+
+  case features_size
+    when 3
+      assign icon_width = 'one-third'
+    when 4
+      assign icon_width = 'one-quarter'
+    else
+      assign icon_width = 'one-half'
+  endcase
+-%}
+
+<div class="product__icons">
+  <div class="grid grid--condensed">
+    {%- for feature in features.value -%}
+      <div class="grid__item {{ icon_width }}">
+        <div class="product__icon__body">
+          <span class="icon-wrapper">
+            {{ feature.icon | img_tag }}
+          </span>
+          <span class="product__icon__text">{{  feature.text }}</span>
+        </div>
+      </div>
+    {%- endfor -%}
+
+    {%  comment  %}
+    <div class="grid__item {{ icon_width }}">
+      <div class="product__icon__body">
+        <span class="icon-wrapper">
+          <img src="https://cdn.shopify.com/s/files/1/0246/9262/1408/files/icon-transport.svg?v=1678385279" />
+        </span>
+        <span class="product__icon__text">Road Transport</span>
+      </div>
+    </div>
+    
+    <div class="grid__item {{ icon_width }}">
+      <div class="product__icon__body">
+        <span class="icon-wrapper">
+          <img src="https://cdn.shopify.com/s/files/1/0246/9262/1408/files/icon-european.svg?v=1678385278" />
+        </span>
+        <span class="product__icon__text">European Union</span>
+      </div>
+    </div>
+
+    <div class="grid__item {{ icon_width }}">
+      <div class="product__icon__body">
+        <span class="icon-wrapper">
+          <img src="https://cdn.shopify.com/s/files/1/0246/9262/1408/files/icon-france.svg?v=1678385279" />
+        </span>
+        <span class="product__icon__text">Made in France</span>
+      </div>
+    </div>
+
+    <div class="grid__item {{ icon_width }}">
+      <div class="product__icon__body">
+        <span class="icon-wrapper">
+          <img src="https://cdn.shopify.com/s/files/1/0246/9262/1408/files/icon-global-organic-textile-standard.svg?v=1678385279" />
+        </span>
+        <span class="product__icon__text">Global Organic Textile Standard</span>
+      </div>
+    </div>
+    {%  endcomment  %}
+  </div>
+</div>

@@ -1,0 +1,70 @@
+<div class="grid grid--condensed">
+  <div class="grid__item two-twelfths">
+    <div
+     {% if product_sticky_layout %}
+       data-product-sticky-selector
+     {% endif %}>
+      <div class="product__thumbs">
+        <ul class="product__thumbs__list">
+          {%- for image in product.images -%}
+            <li
+             class="product__thumbs__item{% if forloop.first %} current{% endif %}"
+             data-image-id="{{ image.id }}"
+             product-thumbs-item>
+              <span class="product__thumbs__link" product-thumbs-link>
+                <span
+                 class="product__thumbs__image lazyload"
+                 data-bgset="{%- include 'bgset', image: image -%}"
+                 role="img"
+                 aria-label="{{ image.alt }}"></span>
+               </span>
+            </li>
+          {%- endfor -%}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid__item ten-twelfths">
+    <div
+     {% if product_sticky_layout %}
+       data-product-sticky-selector
+     {% endif %}>
+      <div class="product__images">
+        <ul class="product__images__list">
+          {%- for image in product.images -%}
+            {%- assign img_api = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+            <li
+             class="product__images__item"
+             data-image-id="{{ image.id }}"
+             product-image-item>
+              <div class="product__image">
+                {%- if settings.product_zoom_enable -%}
+                  <a
+                   href="{{ image | img_url: 'master' }}"
+                   product-image-zoom-trigger>
+                    {% include 'lazy-image' with image: image %}
+                  </a>
+                {%- else -%}
+                  {% include 'lazy-image' with image: image %}
+                {%- endif -%}
+              </div>
+            </li>
+          {%- endfor -%}
+
+          <noscript>
+            {%- for image in product.images -%}
+              <li class="product__images__item">
+                <img src="{{ image | img_url: '900x' }}" alt="{{ image.alt | default: product.title  }}">
+              </li>
+            {%- endfor -%}
+          </noscript>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+{%- if product.images.size == 0 -%}
+  &nbsp;
+{%- endif -%}

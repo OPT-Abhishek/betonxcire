@@ -1,0 +1,195 @@
+{%- assign parent = false -%}
+{%- if link.levels == 1 -%}
+  {%- assign parent = true -%}
+{%- endif -%}
+{%- assign grandparent = false -%}
+{%- if link.levels == 2 -%}
+  {%- assign grandparent = true -%}
+{%- endif -%}
+{%- assign child_count = 0 -%}
+{%- if grandparent -%}
+  {%- assign child_count = link.links.size -%}
+  {%- if child_count > 10 -%}
+    {%- assign child_count = 10 -%}
+  {%- endif -%}
+{%- endif -%}
+
+
+{%- assign is_shop_link = false -%}
+{%- if link.title == 'Shop' -%}
+  {%- assign is_shop_link = true -%}
+{%- endif -%}
+
+{%- assign is_collection_link = false -%}
+{%- if link.handle == 'collections' or link.handle == 'lookbook' -%}
+  {%- if section.settings.dropdown_item_image_1 or
+         section.settings.dropdown_item_image_2 or
+         section.settings.dropdown_item_image_3 -%}
+    {%- assign is_collection_link = true -%}
+  {%- endif -%}
+{%- endif -%}
+
+{%- assign first_character = link.title | slice: 0 -%}
+{%- if first_character == '_' -%}
+  {%- continue -%}
+{%- endif -%}
+
+<li class="nav__item{% if link.active %} nav__item--active{% endif %}{% if grandparent %} grandparent kids-{{ child_count }}{% elsif parent %} parent{% else %} child{%endif%}">
+  <a
+   href="{{ link.url }}"
+   class="nav__link"
+   {% if parent or grandparent %}
+     aria-haspopup="true"
+     aria-expanded="false"
+   {% endif %}>{{ link.title | escape }}</a>
+
+  {%- if parent or grandparent -%}
+    <a
+     href="#"
+     class="nav__caret"
+     aria-haspopup="true"
+     aria-expanded="false">
+      <span class="nav__caret__plus">+</span><span class="nav__caret__minus">-</span>
+    </a>
+
+    {%- if is_collection_link or is_shop_link -%}
+      <div class="nav__dropdown nav__dropdown--image{% if is_collection_link %} nav__dropdown--collections{% endif %}">
+        <div class="wrapper">
+          {%- if is_shop_link -%}
+            {%- assign item_count = link.links.size -%}
+            {%- assign grid_item_width = 'medium-up--one-fifth' -%}
+            {%- case item_count-%}
+              {%- when 1 -%}
+                {%- assign grid_item_width = 'one-full' -%}
+              {%- when 2 -%}
+                {%- assign grid_item_width = 'medium-up--one-half' -%}
+              {%- when 3 -%}
+                {%- assign grid_item_width = 'medium-up--one-third' -%}
+              {%- when 4 -%}
+                {%- assign grid_item_width = 'small--one-half medium-up--one-quarter' -%}
+              {%- when 5 -%}
+                {%- assign grid_item_width = 'small--one-third medium-up--one-fifth' -%}
+              {%- when 6 -%}
+                {%- assign grid_item_width = 'small--one-third medium-up--one-sixth' -%}
+              {%- when 7 -%}
+                {%- assign grid_item_width = 'small--one-third medium-up--one-seventh' -%}
+              {%- when 8 -%}
+                {%- assign grid_item_width = 'small--one-third medium-up--one-eighth' -%}
+            {%- endcase -%}
+
+            <div class="nav__dropdown__items grid grid--condensed text-center">
+              {%- for link in link.links -%}
+                {%- assign image = false -%}
+                {%- if link.type == 'collection_link' -%}
+                  {%- assign image = link.object.image -%}
+                {%- endif -%}
+                {%- if link.type == 'product_link' -%}
+                  {%- assign image = link.object.featured_image -%}
+                {%- endif -%}
+                {%- assign item_title = link.title -%}
+                {%- assign item_link = link.url -%}
+
+                {%- unless image == blank -%}
+                  {%- capture item_image -%}
+                    <div
+                     class="nav__dropdown__image lazyload"
+                     data-bgset="{%- include 'bgset', image: image -%}"
+                     role="img"
+                     aria-label="{{ image.alt }}"></div>
+                  {%- endcapture -%}
+                {%- endunless -%}
+
+                <div class="nav__dropdown__item grid__item {{ grid_item_width }}">
+                  {%- unless item_link == blank -%}
+                    <a href="{{ item_link }}">
+                      {{ item_image }}
+                    </a>
+                  {%- else -%}
+                    {{ item_image }}
+                  {%- endunless -%}
+
+                  {%- unless item_title == blank -%}
+                    <p>
+                      {%- unless item_link == blank -%}
+                        <a href="{{ item_link }}">{{ item_title | escape }}</a>
+                      {%- else -%}
+                        {{ item_title | escape }}
+                      {%- endunless -%}
+                    </p>
+                  {%- endunless -%}
+                </div>
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
+
+          {%- if is_collection_link -%}
+            <div class="grid">
+              <div class="grid__item two-twelfths">
+                <ul class="nav__list">
+                  {%- for link in link.links -%}
+                    {%- include 'nav-item' -%}
+                  {%- endfor -%}
+                </ul>
+              </div>
+
+              <div class="grid__item ten-twelfths">
+                <div class="nav__dropdown__items">
+                  {%- for i in (1..3) -%}
+                    {%- capture image_key -%}dropdown_item_image_{{ i }}{%- endcapture -%}
+                    {%- capture title_key -%}dropdown_item_title_{{ i }}{%- endcapture -%}
+                    {%- capture link_key -%}dropdown_item_link_{{ i }}{%- endcapture -%}
+
+                    {%- assign image = section.settings[image_key] -%}
+                    {%- assign item_title = section.settings[title_key] -%}
+                    {%- assign item_link = section.settings[link_key] -%}
+
+                    {%- unless image == blank -%}
+                      {%- capture item_image -%}
+                        <img
+                         src="{{ image | img_url: '300x' }}"
+                         alt="{{ image.alt }}" />
+                        <div
+                         class="hide nav__dropdown__image lazyload"
+                         data-bgset="{%- include 'bgset', image: image -%}"
+                         role="img"
+                         aria-label="{{ image.alt }}"></div>
+                      {%- endcapture -%}
+
+                      <div class="nav__dropdown__item">
+                        {%- unless item_link == blank -%}
+                          <a href="{{ item_link }}">
+                            {{ item_image }}
+                          </a>
+                        {%- else -%}
+                          {{ item_image }}
+                        {%- endunless -%}
+
+                        {%- unless item_title == blank -%}
+                          <p>
+                            {%- unless item_link == blank -%}
+                              <a href="{{ item_link }}">{{ item_title | escape }}</a>
+                            {%- else -%}
+                              {{ item_title | escape }}
+                            {%- endunless -%}
+                          </p>
+                        {%- endunless -%}
+                      </div>
+                    {%- endunless -%}
+                  {%- endfor -%}
+                </div>
+              </div>
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+    {%- else -%}
+      <div class="nav__dropdown">
+        <ul class="nav__list">
+          {%- for link in link.links -%}
+            {%- include 'nav-item' -%}
+          {%- endfor -%}
+        </ul>
+      </div>
+    {%- endif -%}
+  {%- endif -%}
+</li>

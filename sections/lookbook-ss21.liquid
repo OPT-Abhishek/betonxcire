@@ -1,0 +1,47 @@
+{%- include 'section-lookbook-single' -%}
+
+{% schema %}
+  {
+    "name": "Lookbook",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "image",
+        "label": "Image",
+        "info": "2000 x 2500px .jpg recommended"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "product",
+        "name": "Product",
+        "settings": [
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image",
+            "info": "2000 x 2500px .jpg recommended"
+          },
+          {
+            "type": "product",
+            "id": "product",
+            "label": "Product"
+          }
+        ]
+      },
+
+      {
+        "type": "gallery_image",
+        "name": "Gallery image",
+        "settings": [
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image",
+            "info": "2000 x 1500px .jpg recommended"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

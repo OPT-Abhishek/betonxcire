@@ -1,0 +1,121 @@
+
+{%- assign image = section.settings.image -%}
+{%- assign richtext = section.settings.richtext -%}
+
+<section class="section-page section-page-about">
+  <section class="about__header">
+    <div class="section-body">
+      <div class="wrapper">
+        <div class="grid">
+          <div class="grid__item medium-up--one-half medium-up--push-one-quarter">
+            <p class="svg-wrapper text-center">
+              {%- include 'logo-rames' -%}
+            </p>
+
+            <h1 class="section-title text-center">{{ page.title }}</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {%- unless image == blank -%}
+    <section class="about__hero">
+      {% include 'lazy-image' with image: image %}
+    </section>
+  {%- endunless -%}
+
+  <section class="about__body">
+    <div class="section-body">
+      <div class="wrapper">
+        <div class="grid">
+          <div class="grid__item medium-up--one-half medium-up--push-one-quarter">
+            <div class="rte text-center">{{ page.content }}</div>
+
+            <p class="svg-wrapper text-center" style="margin: 40px 0;">
+              {%- include 'logo-rames' -%}
+            </p>
+
+            {%- unless richtext == blank -%}
+              <div class="rte text-center">{{ richtext }}</div>
+            {%- endunless -%}
+
+            {%- if section.blocks.size > 0 -%}
+              <div class="accordion text-center" accordion>
+                {%- for block in section.blocks -%}
+                  {%- assign title = block.settings.title -%}
+                  {%- assign richtext = block.settings.richtext -%}
+                  {%- assign link_text = block.settings.link_text -%}
+                  {%- assign link_url = block.settings.link_url -%}
+
+                  <div class="accordion__item" accordion-item>
+                    <h4 class="accordion__toggle h6 color--camel" accordion-toggle>{{ title }}<span class="accordion__icon"><i class="icon-close"></i></span></h4>
+
+                    <div class="accordion__content" accordion-content>
+                      <div class="rte">{{ richtext }}</div>
+
+                      {%- unless link_text == blank or link_url == blank -%}
+                        <p><a class="text-link--grey text-link--arrow-next uppercase" href="{{ link_url }}">{{ link_text }}</a></p>
+                      {%- endunless -%}
+                    </div>
+                  </div>
+                {%- endfor -%}
+              </div>
+            {%- endif -%}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {% include 'section-discover-our-shapes' %}
+</section>
+
+
+{% schema %}
+  {
+    "name": "About",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "image",
+        "label": "Image",
+        "info": "2046 x 1024px .jpg recommended"
+      },
+      {
+        "type": "richtext",
+        "id": "richtext",
+        "label": "Richtext",
+        "default": "<p><strong>BÉTON CIRÉ HEADWEAR COLLECTIONS</strong><br />The brand has 4 lines in its hat collection and each season, new shapes and new designs reinforce the creative aspirations of the small Parisian studio.</p>"
+      }
+    ],
+    "blocks" : [
+      {
+        "type": "collection_item",
+        "name": "Collection item",
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading"
+          },
+          {
+            "type": "richtext",
+            "id": "richtext",
+            "label": "Richtext"
+          },
+          {
+            "type": "text",
+            "id": "link_text",
+            "label": "Link text"
+          },
+          {
+            "type": "url",
+            "id": "link_url",
+            "label": "Link url"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

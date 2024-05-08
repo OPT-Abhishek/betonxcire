@@ -1,0 +1,227 @@
+{%- assign title = section.settings.title -%}
+{%- assign subheading = section.settings.subheading -%}
+{%- assign content = section.settings.content -%}
+
+<section
+ class="section-instagram"
+ data-section-type="instagram"
+ data-section-id="{{ section.id }}">
+  <div class="section-body">
+    <div
+     data-aos="fade-up"
+     data-aos-easing="linear"
+     data-aos-duration="400"
+     data-aos-delay="0">
+      {%- unless title == blank -%}
+        <h2 class="section-title h4 text-center">{{ title | escape }}</h2>
+      {%- endunless -%}
+
+      <p class="svg-wrapper svg-wrapper--sm text-center">
+        {%- include 'logo-rames' -%}
+      </p>
+
+      {%- unless subheading == blank -%}
+        <h3 class="section-subheading h1 text-center">{{ subheading | escape }}</h3>
+      {%- endunless -%}
+
+      {%- unless content == blank -%}
+        <p class="section-content text-center">{{ content | escape }}</p>
+      {%- endunless -%}
+    </div>
+
+    <div
+     data-aos="fade-up"
+     data-aos-easing="linear"
+     data-aos-duration="400"
+     data-aos-delay="400">
+      <div class="grid grid--condensed instagram-blocks" data-slider>
+        {%- for i in (1..8) -%}
+          {%- capture image_key -%}image_{{ i }}{%- endcapture -%}
+          {%- capture link_key -%}link_{{ i }}{%- endcapture -%}
+          {%- assign image = section.settings[image_key] -%}
+          {%- assign link = section.settings[link_key] -%}
+
+          {%- capture instagram_block_html -%}
+            <div class="instagram-block__icon">
+              {% include 'icon-instagram' %}
+            </div>
+
+            {%- unless image == blank -%}
+              <div
+               class="instagram-block__bg lazyload"
+               data-bgset="{%- include 'bgset', image: image -%}"
+               role="img"
+               aria-label="{{ image.alt }}"></div>
+            {%- else -%}
+              <div class="instagram-block__bg instagram-block__bg--placeholder"></div>
+            {%- endunless -%}
+          {%- endcapture -%}
+
+          <div class="grid__item one-half medium-up--one-quarter instagram-block{% if forloop.index > 4 %} instagram-block--additional{% endif %}" data-slide>
+            <div class="instagram-block__body">
+              {%- unless link == blank -%}
+                <a href="{{ link }}" target="_blank">
+                  {{ instagram_block_html }}
+                </a>
+              {%- else -%}
+                {{ instagram_block_html }}
+              {%- endunless -%}
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "Instagram feed",
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Collect, Spread, Unity"
+      },
+      {
+        "type": "text",
+        "id": "subheading",
+        "label": "Sub-heading",
+        "default": "#MIKIADDICT"
+      },
+      {
+        "type": "textarea",
+        "id": "content",
+        "label": "Content",
+        "default": "Discover the style of our dear community and how they rock they favorite hat of the current season"
+      },
+
+      {
+        "type": "header",
+        "content": "Block #1"
+      },
+      {
+        "type": "image_picker",
+        "id": "image_1",
+        "label": "Image"
+      },
+      {
+        "type": "url",
+        "id": "link_1",
+        "label": "Link"
+      },
+
+      {
+        "type": "header",
+        "content": "Block #2"
+      },
+      {
+        "type": "image_picker",
+        "id": "image_2",
+        "label": "Image"
+      },
+      {
+        "type": "url",
+        "id": "link_2",
+        "label": "Link"
+      },
+
+      {
+        "type": "header",
+        "content": "Block #3"
+      },
+      {
+        "type": "image_picker",
+        "id": "image_3",
+        "label": "Image"
+      },
+      {
+        "type": "url",
+        "id": "link_3",
+        "label": "Link"
+      },
+
+      {
+        "type": "header",
+        "content": "Block #4"
+      },
+      {
+        "type": "url",
+        "id": "link_4",
+        "label": "Link"
+      },
+      {
+        "type": "image_picker",
+        "id": "image_4",
+        "label": "Image"
+      },
+      {
+        "type": "header",
+        "content": "Block #5"
+      },
+      {
+        "type": "image_picker",
+        "id": "image_5",
+        "label": "Image"
+      },
+      {
+        "type": "url",
+        "id": "link_5",
+        "label": "Link"
+      },
+
+      {
+        "type": "header",
+        "content": "Block #6"
+      },
+      {
+        "type": "image_picker",
+        "id": "image_6",
+        "label": "Image"
+      },
+      {
+        "type": "url",
+        "id": "link_6",
+        "label": "Link"
+      },
+
+      {
+        "type": "header",
+        "content": "Block #7"
+      },
+      {
+        "type": "image_picker",
+        "id": "image_7",
+        "label": "Image"
+      },
+      {
+        "type": "url",
+        "id": "link_7",
+        "label": "Link"
+      },
+
+      {
+        "type": "header",
+        "content": "Block #8"
+      },
+      {
+        "type": "image_picker",
+        "id": "image_8",
+        "label": "Image"
+      },
+      {
+        "type": "url",
+        "id": "link_8",
+        "label": "Link"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Instagram",
+        "category": "Social"
+      }
+    ]
+  }
+{% endschema %}
+

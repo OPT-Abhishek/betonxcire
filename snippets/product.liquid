@@ -1,0 +1,117 @@
+
+{%- assign current_variant = product.selected_or_first_available_variant -%}
+{%- assign product_breadcrumbs = section.settings.product_breadcrumbs -%}
+
+{%- assign product_sticky_layout = true -%}
+{%- assign product_image_width = 'medium-up--seven-twelfths' -%}
+{%- assign product_description_width = 'medium-up--five-twelfths' -%}
+
+{%- assign product_short_description = product.metafields.global.short_description -%}
+
+<div class="product-page">
+  <div class="wrapper">
+    {%- if product_breadcrumbs -%}
+      {%- include 'breadcrumb' -%}
+    {%- endif -%}
+
+    <div
+     class="grid product-single"
+     {% if product_sticky_layout %}
+       data-product-sticky-parent
+     {% endif %}>
+      <div class="grid__item {{ product_image_width }} text-center">
+        <div>
+          <div class="medium-up--hide">
+            {%- include 'product-slides' -%}
+          </div>
+
+          <div class="small-down--hide">
+            {%- include 'product-images' -%}
+          </div>
+        </div>
+      </div>
+
+      <div class="grid__item {{ product_description_width }}">
+        <div
+         {% if product_sticky_layout %}
+           data-product-sticky-selector
+         {% endif %}>
+          <div class="product__info">
+            <p class="product__logo">{% include 'logo-rames' %}</p>
+
+            <h1 class="product__title h2">{{ product.title }}</h1>
+
+            <p class="product__price{% if current_variant.compare_at_price > current_variant.price %} on-sale{% endif %}">
+              <span data-product-price><span class="money">{{ current_variant.price | money }}</span></span>
+
+              <span class="small compare-at em"{% unless current_variant.compare_at_price > current_variant.price %} style="display: none"{% endunless %} data-compare-price><span class="money">{{ product.compare_at_price_max | money }}</span></span>
+            </p>
+
+            {%- unless product_short_description == blank -%}
+              <div class="product__description rte">{{ product_short_description }}</div>
+            {%- endunless -%}
+
+            {% comment %}
+              If the product description is over 1000 characters or contains an embed code,
+              place the description in a full width container below the image and cart button.
+            {% endcomment %}
+            {% assign description_position = '' %}
+            {%- assign product_description_content = product.description -%}
+            {%- assign has_tabs = false -%}
+            {%- for block in section.blocks -%}
+              {%- if block.type == "tab_description" -%}
+                {%- assign has_tabs = true -%}
+              {%- endif -%}
+            {%- endfor -%}
+            {%-if has_tabs -%}
+              {%- assign product_description_content = product_description_content | split: '<h6>' | first -%}
+            {%- endif -%}
+            {% if product_description_content contains '[split]' %}
+              {% assign description_position = 'both' %}
+            {% endif  %}
+
+            {%- if product.description contains '<h6>' -%}
+              <div class="product__description rte">
+                {{ product_description_content | replace: '<p>[split]</p>', '[split]' | split: '[split]' | first }}
+              </div>
+            {%- endif -%}
+
+            {% include 'product-form' %}
+
+            {% render 'product-icons' with product: product %}
+
+            <div class="product__value-props">
+              <div class="icon-wrapper">{% include 'icon-return' %}</div>
+
+              <p>14 days to exchange or return your item, method of delivery of your choice</p>
+            </div>
+
+            {%- if section.blocks.size > 0 -%}
+              <div class="product__accordion">
+                {% include 'product-accordion' %}
+              </div>
+            {%- endif -%}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if description_position == 'both' %}
+  <div class="wrapper">
+    <div class="product__description rte">
+      {{ product_description_content | replace: '<p>[split]</p>', '[split]' | split: '[split]' | last }}
+    </div>
+  </div>
+{% endif %}
+
+{%- if section.settings.product_reviews_enable -%}
+  <div class="wrapper">
+    <div id="shopify-product-reviews" data-id="{{product.id}}">{{ product.metafields.spr.reviews }}</div>
+  </div>
+{%- endif -%}
+
+<script type="application/json" data-product-json>
+  {{ product | json }}
+</script>

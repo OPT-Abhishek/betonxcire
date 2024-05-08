@@ -1,0 +1,90 @@
+{%- assign image = section.settings.image -%}
+
+<section
+ class="section-page-lookbook-single"
+ data-section-type="lookbook-single"
+ data-section-id="{{ section.id }}">
+  <div class="section-body">
+    <div class="wrapper">
+      {% include 'breadcrumb' %}
+    </div>
+
+    <div class="lookbook-single">
+      <div class="wrapper">
+        <div class="grid">
+          <div class="grid__item medium-up--one-half">
+            {%- unless image == blank -%}
+              <div
+               class="lookbook-single__hero lazyload"
+               data-bgset="{%- include 'bgset', image: image -%}"
+               role="img"
+               aria-label="{{ image.alt }}"></div>
+            {%- else -%}
+              <div class="lookbook-single__hero lookbook-single__hero--placeholder"></div>
+            {%- endunless -%}
+          </div>
+
+          <div class="grid__item medium-up--one-half">
+            <div class="lookbook-single__body">
+              <h1 class="section-title text-center">
+                <div class="section-title__logo">{% include 'logo-rames' %}</div>
+                {{ page.title }}
+              </h1>
+
+              <div class="rte">
+                {{ page.content }}
+              </div>
+
+              <div class="lookbook-single__products" data-product-slider>
+                {%- for block in section.blocks -%}
+                  {%- if block.type == 'product' -%}
+                    {%- assign product = all_products[block.settings.product] -%}
+                    {%- assign image = block.settings.image -%}
+
+                    {% include 'product-grid-item' with
+                      featured_image: image,
+                      double_img: false,
+                      product: product %}
+
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="grid__item">
+            <ul class="lookbook-single__gallery" data-gallery-slider>
+              {%- for block in section.blocks -%}
+                {%- if block.type == 'gallery_image' -%}
+                  {%- assign image = block.settings.image -%}
+                  <li class="lookbook-single__gallery-item" data-gallery-slide>
+
+                    {% comment %}
+                      {% include 'lazy-image' with image: image %}
+                    {% endcomment %}
+
+                    {%- assign img_api = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+                    <div class="image-wrapper">
+                      <img
+                       class="lazyload fade-in"
+                       alt="{{ image.alt }}"
+                       data-src="{{ img_api }}"
+                       data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048, 2450, 2700, 3000, 3350, 3750, 4100, 4480]"
+                       data-aspectratio="{{ image.aspect_ratio }}"
+                       data-parent-fit="cover"
+                       data-sizes="auto"/>
+                    </div>
+                  </li>
+                {%- endif -%}
+              {%- endfor -%}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+

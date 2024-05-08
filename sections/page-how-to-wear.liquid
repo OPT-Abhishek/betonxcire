@@ -1,0 +1,186 @@
+
+{%- assign image = section.settings.image -%}
+{%- assign richtext = section.settings.richtext -%}
+
+<section class="section-page section-page-how-to-wear">
+  <div class="section-body">
+    <div class="wrapper">
+      <div class="grid">
+        <div class="grid__item medium-up--one-half medium-up--push-one-quarter">
+          <p class="svg-wrapper text-center">
+            {%- include 'logo-rames' -%}
+          </p>
+
+          <h1 class="section-title text-center">{{ page.title }}</h1>
+        </div>
+      </div>
+    </div>
+</section>
+
+{%- if section.blocks.size > 0 -%}
+  {%- for block in section.blocks -%}
+    {%- include block.type -%}
+  {%- endfor -%}
+{%- endif -%}
+
+{% comment %}
+  {% include 'section-discover-our-shapes' %}
+{% endcomment %}
+
+{% schema %}
+  {
+    "name": "How to Wear",
+    "settings": [
+    ],
+    "blocks": [
+      {
+        "type": "section-how-to-wear",
+        "name": "How to wear section",
+        "settings": [
+          {
+            "type": "header",
+            "content": "Layout"
+          },
+          {
+            "type": "checkbox",
+            "id": "text_block_first",
+            "label": "Text block first",
+            "default": false
+          },
+          {
+            "type": "header",
+            "content": "Image Block"
+          },
+          {
+            "type": "image_picker",
+            "id": "image_1",
+            "label": "Image #1",
+            "info": "1500 x 2000px .jpg recommended"
+          },
+          {
+            "type": "text",
+            "id": "image_caption_1",
+            "label": "Image caption #1"
+          },
+          {
+            "type": "image_picker",
+            "id": "image_2",
+            "label": "Image #2",
+            "info": "1500 x 2000px .jpg recommended"
+          },
+          {
+            "type": "text",
+            "id": "image_caption_2",
+            "label": "Image caption #2"
+          },
+          {
+            "type": "image_picker",
+            "id": "image_3",
+            "label": "Image #3",
+            "info": "1500 x 2000px .jpg recommended"
+          },
+          {
+            "type": "text",
+            "id": "image_caption_3",
+            "label": "Image caption #3"
+          },
+          {
+            "type": "image_picker",
+            "id": "image_4",
+            "label": "Image #4",
+            "info": "1500 x 2000px .jpg recommended"
+          },
+          {
+            "type": "text",
+            "id": "image_caption_4",
+            "label": "Image caption #4"
+          },
+          {
+            "type": "header",
+            "content": "Text Block"
+          },
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Heading"
+          },
+          {
+            "type": "richtext",
+            "id": "richtext",
+            "label": "Text"
+          },
+          {
+            "type": "header",
+            "content": "Button"
+          },
+          {
+            "type": "url",
+            "id": "btn_link",
+            "label": "Link"
+          },
+          {
+            "type": "text",
+            "id": "btn_text",
+            "label": "Text"
+          }
+        ]
+      },
+      {
+        "type": "section-double",
+        "name": "Double section",
+        "settings": [
+          {
+            "type": "header",
+            "content": "Layout"
+          },
+          {
+            "type": "checkbox",
+            "id": "text_block_first",
+            "label": "Text block first",
+            "default": false
+          },
+          {
+            "type": "header",
+            "content": "Image Block"
+          },
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image",
+            "info": "2000 x 1500px .jpg recommended"
+          },
+          {
+            "type": "header",
+            "content": "Text Block"
+          },
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Heading"
+          },
+          {
+            "type": "richtext",
+            "id": "richtext",
+            "label": "Text"
+          },
+          {
+            "type": "header",
+            "content": "Button"
+          },
+          {
+            "type": "url",
+            "id": "btn_link",
+            "label": "Link"
+          },
+          {
+            "type": "text",
+            "id": "btn_text",
+            "label": "Text"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

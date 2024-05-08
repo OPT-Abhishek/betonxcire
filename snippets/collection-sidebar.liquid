@@ -1,0 +1,198 @@
+{% comment %}
+
+  Side navigation for the product types, vendors, and tags.
+  These can be based on the current collection or all products. Details in comments below.
+
+  Note: Clicking on a tag will filter the products within the current collection.
+  Clicking on a type or vendor link will take you out of the current collection
+  to a standalone collection page. E.g. /collections/vendors?q=Pepsi
+
+{% endcomment %}
+
+<aside class="collection__sidebar">
+  <div class="collection__sidebar__rames small-down--hide">
+    <div class="svg-wrapper">
+      {%- include 'logo-rames' -%}
+    </div>
+  </div>
+
+
+  {%- unless section.settings.collection_sidebar_nav == blank or section.settings.collection_sidebar_nav.empty? -%}
+    {% assign custom_nav_list = section.settings.collection_sidebar_nav | handleize %}
+    <div class="filter__nav filter__nav--{{ block.settings.title | handle }}" filter-nav>
+      <p class="filter__nav__toggle h4 active" filter-nav-toggle>
+        Shapes
+      </p>
+
+      <div class="filter__nav__content in" filter-nav-content>
+        <ul class="filter__list">
+          <li class="filter__item filter__item--all link--add">
+            <a
+             href="/collections/{{ collection_handle }}/{{ all_tags_url | slice: 0, all_tags_url_size }}"
+             title="All">All</a>
+            {% include 'icon-box' %}
+          </li>
+
+          {%- for link in linklists[custom_nav_list].links -%}
+            {%- if link.links == blank -%}
+              <li class="filter__item{% if link.active or link.handle == collection.handle %} filter__item--active{% endif %} {{ link_style }}">
+                <a
+                 href="{{ link.url }}{% unless current_tags == blank %}/{% for tag in current_tags %}{% unless forloop.first %}+{% endunless %}{{ tag | handle }}{% endfor %}{% endunless %}"
+                 title="{{ link.title | escape }}">
+                  {{ link.title }}
+                </a>
+                {% include 'icon-box' %}
+              </li>
+            {%- endif -%}
+          {%- endfor -%}
+        </ul>
+      </div>
+    </div>
+
+    {% comment %}
+    <div class="collection__sidebar__nav">
+      <ul class="collection__slidebar__list accessibleNav">
+        {% for link in linklists[custom_nav_list].links %}
+          {% if link.links == blank %}
+            <li class="collection__sidebar__item{% if link.active or link.handle == collection.handle %} active{% endif %}">
+              <a
+               class="collection__sidebar__link h4"
+               href="{{ link.url }}{% unless current_tags == blank %}/{% for tag in current_tags %}{% unless forloop.first %}+{% endunless %}{{ tag | handle }}{% endfor %}{% endunless %}"
+               title="{{ link.title | escape }}">{{ link.title }}</a>
+            </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
+    {% endcomment %}
+  {%- endunless -%}
+
+  {%- comment -%}
+    {%- if current_tags.size > 0 -%}
+      <div class="collection__sidebar__selected">
+        {% include 'collection-selected-tags' %}
+      </div>
+    {%- endif -%}
+  {%- endcomment -%}
+
+
+  {%- assign collection_handle = 'all' -%}
+  {%- if collection.handle -%}
+    {%- assign collection_handle = collection.handle -%}
+  {%- endif -%}
+
+  {%- if collection.all_tags.size > 0 and section.blocks.size > 0 -%}
+    {%- capture current_tags_url -%}
+      {%- for tag in current_tags -%}{{ tag | handleize }}+{%- endfor -%}
+    {%- endcapture -%}
+    {%- if current_tags_url == '+' -%}{%- assign current_tags_url = '' -%}{%- endif -%}
+    {%- assign current_tags_compare = current_tags_url | prepend: '+' -%}
+
+    {%- capture shop_tags -%}
+      {%- for tag in collection.tags -%}{{ tag | handleize }}+{%- endfor -%}
+    {%- endcapture -%}
+    {%- assign shop_tags_compare = shop_tags | prepend: '+' -%}
+
+    {%- for block in section.blocks -%}
+      {%- if block.settings.title == 'Color' -%}
+        {%- continue -%}
+      {%- endif -%}
+
+      <div class="filter__nav filter__nav--{{ block.settings.title | handle }}" filter-nav>
+        {%- assign settings_tag_array = block.settings.group_tags | split: ',' -%}
+        <p class="filter__nav__toggle h4 active" filter-nav-toggle>
+          {{ block.settings.title }}
+        </p>
+
+        <div class="filter__nav__content in" filter-nav-content>
+          <ul class="filter__list">
+            {%- assign all_tags_url = current_tags_url -%}
+            {%- assign all_tags_url_size = all_tags_url | size | minus: 1 -%}
+
+            {%- unless block.settings.title == 'Color' -%}
+              <li class="filter__item filter__item--all link--add">
+                <a
+                 href="/collections/{{ collection_handle }}/{{ all_tags_url | slice: 0, all_tags_url_size }}"
+                 data-collection-path="{{ collection_handle }}"
+                 data-tag-path=""
+                 title="All">
+                  All
+                </a>
+                {% include 'icon-box' %}
+              </li>
+            {%- endunless -%}
+
+            {%- for settings_tag in settings_tag_array -%}
+              {% comment %} Normalize merchant settings input {% endcomment %}
+              {%- assign settings_tag_handle = settings_tag | handleize -%}
+              {%- assign settings_tag_handle_plus = settings_tag | handleize | append: '+' | prepend: '+' -%}
+
+              {%- assign link_style = 'link--disable' -%}
+
+              {% comment %} If tag is currently active setup URLs to remove tag {% endcomment %}
+              {%- if current_tags_compare contains settings_tag_handle_plus -%}
+                {%- assign link_style = 'link--remove' -%}
+                {%- assign removed_tag_array = '' -%}
+                {%- for product_tag in current_tags -%}
+                  {%- assign product_tag_handle = product_tag | handleize -%}
+                  {%- unless settings_tag_handle == product_tag_handle -%}
+                    {%- assign removed_tag_array = removed_tag_array | append: product_tag_handle | append: '[!ヽ(´ー｀)/!]' -%}
+                  {%- endunless -%}
+                {%- endfor -%}
+                {%- assign removed_tag_array = removed_tag_array | split: '[!ヽ(´ー｀)/!]' -%}
+                {%- capture removed_tag_url -%}
+                  {%- for tag in removed_tag_array -%}{{ tag | handleize }}{%- unless forloop.last -%}+{%- endunless -%}{%- endfor -%}
+                {%- endcapture -%}
+
+                <li class="filter__item filter__item--active {{ link_style }}">
+                  <a
+                   href="/collections/{{ collection_handle }}/{{ removed_tag_url }}"
+                   title="✕ {{settings_tag}}"
+                   data-tag-handle="{{ settings_tag_handle }}"
+                   data-collection-path="{{ collection_handle }}"
+                   data-tag-path="{{ removed_tag_url }}">
+                    {%- if block.settings.title == 'Color' -%}
+                      <span
+                       class="swatch__link swatch__link--color"
+                       data-color="{{ settings_tag | remove: 'Color: ' | strip }}">
+                        <span class="swatch__link__color"></span>
+                        <span class="swatch__link__text">{{ settings_tag }}</span>
+                      </span>
+                    {%- else -%}
+                      {{ settings_tag }}
+                    {%- endif -%}
+                  </a>
+                  {% include 'icon-box' %}
+                </li>
+              {%- else -%}
+                {% if shop_tags_compare contains settings_tag_handle_plus %}
+                  {%- assign link_style = 'link--add' -%}
+                {%- endif -%}
+                <li class="filter__item {{ link_style }}">
+                  <a
+                   href="/collections/{{ collection_handle }}/{{ current_tags_url }}{{ settings_tag_handle }}"
+                   title="+ {{settings_tag}}"
+                   data-tag-handle="{{ settings_tag_handle }}"
+                   data-collection-path="{{ collection_handle }}"
+                   data-tag-path="{{ current_tags_url }}{{ settings_tag_handle }}">
+                    {%- if block.settings.title == 'Color' -%}
+                      <span
+                       class="swatch__link swatch__link--color"
+                       data-color="{{ settings_tag | remove: 'Color: ' | strip }}">
+                        <span class="swatch__link__color"></span>
+                        <span class="swatch__link__text">{{ settings_tag }}</span>
+                      </span>
+                    {%- else -%}
+                      {{ settings_tag }}
+                    {%- endif -%}
+                  </a>
+                  {% include 'icon-box' %}
+                </li>
+              {%- endif -%}
+            {%- endfor -%}
+          </ul>
+        </div>
+      </div>
+    {%- endfor -%}
+  {%- endif -%}
+</aside>

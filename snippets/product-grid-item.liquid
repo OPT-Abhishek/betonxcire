@@ -1,0 +1,269 @@
+{%- assign on_sale = false -%}
+{%- if product.compare_at_price > product.price -%}
+  {%- assign on_sale = true -%}
+{%- endif -%}
+
+{%- assign sold_out = true -%}
+{%- if product.available -%}
+  {%- assign sold_out = false -%}
+{%- endif -%}
+
+{%- assign new_product = false -%}
+{%- assign published_date = product.published_at | date: "%s"  -%}
+{%- assign now_date = 'now' | date: "%s" -%}
+{%- assign age_in_days = now_date | minus: published_date | divided_by: 60 | divided_by: 60 | divided_by: 12 -%}
+{%- if age_in_days < settings.tag_new_limit -%}
+  {%- assign new_product = true -%}
+{%- endif -%}
+
+{%- assign sellout_tag = false -%}
+{%- if sold_out and settings.tag_sellout -%}
+  {%- assign sellout_tag = true -%}
+{%- endif -%}
+
+{%- assign new_tag = false -%}
+{%- if new_product and settings.tag_new -%}
+  {%- assign new_tag = true -%}
+{%- endif -%}
+
+{%- assign sale_tag = false -%}
+{%- if on_sale and settings.tag_sale -%}
+  {%- assign sale_tag = true -%}
+{%- endif -%}
+
+{%- assign tagged = false -%}
+{%- if sellout_tag or new_tag or sale_tag -%}
+  {%- assign tagged = true -%}
+{%- endif -%}
+
+{%- capture sticker -%}
+  {%- if tagged %}
+    {%- if sellout_tag -%}
+      <div class="sticker sticker--sold">{{ 'products.product.sold_out' | t }}</div>
+    {%- elsif sale_tag -%}
+      <div class="sticker sticker--sale">{{ 'products.product.sale' | t }}</div>
+    {%- elsif new_tag -%}
+      <div class="sticker sticker--new">{{ 'products.product.new' | t }}</div>
+    {%- endif -%}
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- assign product_img = product.featured_image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+
+{%- assign double_img = false -%}
+{% if product.images[1].src and settings.image_hover_enable %}
+  {%- assign double_img = true -%}
+{% endif %}
+
+{%- comment -%}
+  {%- if settings.image_autoheight_enable -%}
+    {%- assign multiplier = settings.product_grid_aspect_ratio -%}
+    {%- assign ratio = product.featured_image.aspect_ratio -%}
+    {%- assign inverse_ratio = 1 | divided_by: ratio -%}
+
+    {%- assign top_offset =  1 | divided_by: ratio | times: 100 | divided_by: 2 -%}
+    {%- assign top_offset_subtractor =  multiplier | times: 100 | divided_by: 2 -%}
+
+    {%- capture auto_height -%}
+      {%- if inverse_ratio > multiplier -%}
+        style="width:{{ ratio | times: multiplier | times: 100 }}%; margin: 0 auto;"
+      {%- else -%}
+        style="padding:{{ top_offset_subtractor | minus: top_offset }}% 0;"
+      {%- endif -%}
+    {%- endcapture -%}
+  {%- endif -%}
+{%- endcomment -%}
+
+
+{%- assign current_variant = product.selected_or_first_available_variant -%}
+{%- assign enable_form = true -%}
+{%- if product == blank -%}
+  {%- assign enable_form = false -%}
+{%- endif -%}
+{%- capture section_id -%}{{ product.handle }}-grid{%- endcapture -%}
+
+{%- assign variant_image = fasle -%}
+{%- if current_variant.image -%}
+  {%- assign variant_image = current_variant.image  -%}
+{%- endif -%}
+
+
+<div
+ class="grid__item {{ grid_offset }} {{ grid_width_small }} {{ grid_width_medium }} {{ grid_width_large }}{% if on_sale %} on-sale{% endif %}{% if tagged %} tagged{% endif %} product-grid-item"
+ {% if enable_form %}
+   data-section-type="product-grid-item"
+   data-section-id="{{ section_id }}"
+ {% endif %}>
+  <div class="grid__wrap">
+    <div class="grid__image-wrapper">
+      {%- assign featured_image = product.featured_image -%}
+      {%- if featured_image -%}
+        <div {{ auto_height }}>
+          <a href="{{ product.url | within: collection }}">
+            <div class="image-wrapper{% if double_img %} image-wrapper--double{% endif %}">
+              <div
+               class="grid__image lazyload"
+               data-bgset="{% include 'bgset', image: featured_image %}"
+               role="img"
+               aria-label="{{ featured_image }}"></div>
+
+              {%- if double_img -%}
+                <div
+                 class="grid__image grid__image--secondary lazyload"
+                 data-bgset="{% include 'bgset', image: product.images[1] %}"
+                 role="img"
+                 aria-label="{{ product.images[1].alt }}"></div>
+              {%- endif -%}
+
+              {{ sticker }}
+            </div>
+          </a>
+        </div>
+
+        <noscript>
+          <a href="{{ product.url | within: collection }}">
+            <img src="{{ featured_image | img_url: '360x' }}" alt="{{ featured_image.alt | default: product.title  }}">
+          </a>
+        </noscript>
+      {%- else -%}
+        <a href="{{ product.url | within: collection }}">
+          <div class="grid__image grid__image--blank"></div>
+        </a>
+      {%- endif -%}
+    </div>
+
+    {%- capture title_and_price -%}
+      <div class="grid__title-and-price">
+        <h4 class="grid__title h6--body">
+          <a href="{{ product.url | within: collection | capitalize }}">{{ product.title }}</a>
+        </h4>
+
+        {%- if enable_form -%}
+          <p class="grid__price{% if current_variant.compare_at_price > current_variant.price %} on-sale{% endif %}">
+            <span data-product-price><span class="money">{{ current_variant.price | money }}</span></span>
+
+            <span class="small compare-at em"{% unless current_variant.compare_at_price > current_variant.price %} style="display: none"{% endunless %} data-compare-price><span class="money">{{ product.compare_at_price_max | money }}</span></span>
+          </p>
+        {%- else -%}
+          <p class="grid__price">
+            <span class="price{% if on_sale %} on-sale{% endif %}">
+              {% if product.price_varies %}{{ 'products.general.from' | t }} {% endif %}
+              <span class="money">{{ product.price | money }}</span>
+            </span>
+
+            {%- if on_sale -%}
+              <span class="compare-at">
+                <span class="money">{{ product.compare_at_price | money }}</span>
+              </span>
+            {%- endif -%}
+          </p>
+        {%- endif -%}
+      </div>
+    {%- endcapture -%}
+
+    {%- capture grid_meta -%}
+      <div class="grid__meta">
+        {%- if variant_image or true -%}
+          <div class="grid grid--condensed small-up--align-items-center">
+            <div class="grid__item small-up--nine-twelfths">
+              {{ title_and_price }}
+            </div>
+
+            <div class="grid__item small-up--three-twelfths mobile--hide">
+              <div
+               class="grid__variant-image lazyload"
+               data-bgset="{%- include 'bgset', image: variant_image -%}"
+               role="img"
+               aria-label="{{ product.title }}"></div>
+            </div>
+          </div>
+        {%- else -%}
+          {{ title_and_price }}
+        {%- endif -%}
+      </div>
+    {%- endcapture -%}
+
+    <div class="grid__body">
+      {%- if enable_form -%}
+        <div class="grid grid--full grid--rev small-up--align-items-center">
+          <div class="grid__item small-up--nine-twelfths">
+            {{ grid_meta }}
+          </div>
+
+          <div class="grid__item small-up--three-twelfths">
+            <div class="grid__form text-center">
+              {%- form 'product', product -%}
+                <button
+                 type="submit"
+                 name="add"
+                 class="{% if sold_out %} disabled{% endif %}"
+                 {% if sold_out %}
+                   disabled="true"
+                 {% endif %}
+                 data-add-to-cart>
+                  {% include 'icon-bag' %}
+                </button>
+
+                {%- unless product.has_only_default_variant -%}
+                  {%- for option in product.options_with_values -%}
+                    {%- include 'product-swatch' with option: option, section_id: section_id -%}
+
+                    <div class="selector-wrapper js">
+                      <label for="SingleOptionSelector-{{ section_id }}-{{ forloop.index0 }}">
+                        {{ option.name }}
+                      </label>
+                      <select
+                       class="single-option-selector single-option-selector-{{ section_id }}"
+                       id="SingleOptionSelector-{{ section_id }}-{{ forloop.index0 }}"
+                       data-section="{{ section_id }}"
+                       data-index="option{{ forloop.index }}">
+                        {%- for value in option.values -%}
+                          {%- assign variant_avialable = true -%}
+                          {%- if product.options.size == 1 -%}
+                            {%- unless product.variants[forloop.index0].available  -%}
+                              {%- assign variant_avialable = false -%}
+                            {%- endunless -%}
+                          {%- endif -%}
+                          <option
+                           value="{{ value | escape }}"
+                           {% if option.selected_value == value %}
+                             selected="selected"
+                           {% endif %}>{{ value }}{% unless variant_avialable %} - {{ 'products.product.sold_out' | t }}{% endunless %}</option>
+                        {%- endfor -%}
+                      </select>
+                    </div>
+                  {%- endfor -%}
+                {%- endunless -%}
+
+                <select
+                 name="id"
+                 id="ProductSelect-{{ section_id }}"
+                 data-section="{{ section_id }}"
+                 class="product-form__variants no-js"
+                 aria-label="{{ product.options_with_values | map: 'name' | uniq | join: ', ' }}">
+                  {%- for variant in product.variants -%}
+                    {%- if variant.available -%}
+                      <option {% if variant == product.selected_or_first_available_variant %} selected="selected" {% endif %} value="{{ variant.id }}">
+                        {{ variant.title }}
+                      </option>
+                    {%- else -%}
+                      <option disabled="disabled">{{ variant.title }} - {{ 'products.product.sold_out' | t }}</option>
+                    {%- endif -%}
+                  {%- endfor -%}
+                </select>
+
+                <input type="hidden" name="quantity" value="1" />
+              {%- endform -%}
+            </div>
+          </div>
+        </div>
+
+        <script type="application/json" data-product-json>
+          {{ product | json }}
+        </script>
+      {%- else -%}
+        {{ grid_meta }}
+      {%- endif -%}
+    </div>
+  </div>
+</div>

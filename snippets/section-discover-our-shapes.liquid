@@ -1,0 +1,47 @@
+{%- assign linklist = linklists.discover-our-shapes -%}
+{%- assign grid_width = 'small-down--one-half medium-up--one-third' -%}
+
+
+<section class="section-discover-our-shapes">
+  <div class="section-body">
+    <div class="wrapper--full">
+      <h2 class="section-title text-center">
+        <div class="section-title__logo">{% include 'logo-rames' %}</div>
+        Discover Our Shapes
+      </h2>
+
+      <div class="grid--condensed">
+        {%- for link in linklist.links -%}
+          {%- assign collection = link.object -%}
+          <div class="grid__item {{ grid_width }} collection-grid-item text-center">
+            <div
+             class="grid__body"
+             data-aos="fade-up"
+             data-aos-easing="linear"
+             data-aos-duration="400"
+             data-aos-delay="0">
+              <a class="grid__link" href="{{ link.url }}">
+                <div class="grid__image-wrap">
+                  {%- if collection.image -%}
+                    <div
+                     class="grid__image lazyload"
+                     data-bgset="{% include 'bgset', image: collection.image %}"
+                     role="img"
+                     aria-label="{{ collection.image }}"></div>
+                  {%- else -%}
+                    <div class="grid__image grid__image--placeholder"></div>
+                  {%- endif -%}
+                </div>
+              </a>
+
+              <p class="grid__title">
+                <a class="grid__link" href="{{ link.url }}">{{ link.title }}</a>
+              </p>
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+
+    </div>
+  </div>
+</section>

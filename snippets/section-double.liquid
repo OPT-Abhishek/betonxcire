@@ -1,0 +1,70 @@
+{%- assign image = block.settings.image -%}
+{%- assign image_badge = block.settings.image_badge -%}
+{%- assign text_block_first = block.settings.text_block_first -%}
+{%- assign text_align = 'text-center medium-up--text-left' -%}
+{%- assign title = block.settings.title -%}
+{%- assign richtext = block.settings.richtext -%}
+{%- assign btn_link = block.settings.btn_link -%}
+{%- assign btn_text = block.settings.btn_text -%}
+{%- assign btn_style = 'text-link--grey text-link--arrow-next uppercase' -%}
+
+{%- if text_block_first -%}
+  {%- assign text_align = 'text-center medium-up--text-right' -%}
+{%- endif -%}
+
+<section class="section-double" {{ block.shopify_attributes }}>
+  <div class="section-body">
+    <div class="wrapper">
+      <div class="grid--full{% if text_block_first %} grid--rev{% endif %} medium-up--align-items-center">
+        <div class="grid__item medium-up--seven-twelfths">
+          <div
+           data-aos="fade-up"
+           data-aos-easing="linear"
+           data-aos-duration="400"
+           data-aos-delay="0">
+            {%- unless image == blank -%}
+              {%- if btn_link -%}
+                <a href="{{ btn_link }}">{% include 'lazy-image' with image: image %}</a>
+              {%- else -%}
+                {% include 'lazy-image' with image: image %}
+              {%- endif -%}
+            {%- else -%}
+              <div class="image-wrapper">
+                <div class="image--placeholder"></div>
+              </div>
+            {%- endunless -%}
+          </div>
+        </div>
+
+        <div class="grid__item medium-up--five-twelfths">
+          <div
+           class="content-wrapper {{ text_align }}"
+           data-aos="fade-up"
+           data-aos-easing="linear"
+           data-aos-duration="400"
+           data-aos-delay="400">
+            <div class="preventOverflowContent">
+              <p class="svg-wrapper">
+                {%- include 'logo-rames' -%}
+              </p>
+
+              {%- unless title == blank -%}
+                <h2 class="section-title h1">{{ title | escape }}</h2>
+              {%- endunless -%}
+
+              {%- unless richtext == blank -%}
+                <div class="rte">{{ richtext }}</div>
+              {%- endunless -%}
+
+              {%- unless btn_text == blank -%}
+                <a
+                 class="{{ btn_style }}"
+                 href="{{ btn_link }}">{{ btn_text | escape }}</a>
+              {%- endunless -%}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

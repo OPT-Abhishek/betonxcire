@@ -1,0 +1,96 @@
+<!-- /sections/related.liquid -->
+
+{%- if section.settings.related_products_enable -%}
+  <section
+   class="related-section">
+    <div class="section-body">
+      <div class="related__wrapper wrapper">
+        <div class="grid">
+          <div class="grid__item">
+            <h3 class="section-title text-center">
+              <span class="section-title__logo">
+                <span class="svg-wrapper">{% include 'logo-rames' %}</span>
+              </span>
+              <span>{{ section.settings.product_recommendations_heading }}</span>
+            </h3>
+
+            <div data-related-section
+   data-section-id="{{ section.id }}"
+   data-product-id="{{ product.id }}"
+   data-limit="{{ section.settings.limit }}"
+   data-section-type="related">
+              {%- if recommendations.performed -%}
+                {%- if recommendations.products_count > 0 -%}
+                  <div class="grid grid--uniform grid--condensed">
+                    {% case recommendations.products_count %}
+                      {% when 1 %}
+                        {% assign grid_width_large = 'medium-up--one-third medium-up--push-one-third' %}
+                        {% assign grid_width_medium = 'small--one-third small--push-one-third' %}
+                      {% when 2 %}
+                        {% assign grid_width_large = 'medium-up--one-half' %}
+                        {% assign grid_width_medium = 'small--one-half' %}
+                      {% when 3 %}
+                        {% assign grid_width_large = 'medium-up--one-third' %}
+                        {% assign grid_width_medium = 'small--one-third' %}
+                      {% when 4 %}
+                        {% assign grid_width_large = 'medium--one-half large-up--one-quarter' %}
+                        {% assign grid_width_medium = 'small--one-half' %}
+                        {% assign grid_width_small = 'mobile--one-half' %}
+                      {% when 5 %}
+                        {% assign grid_width_large = 'medium-up--one-fifth' %}
+                        {% assign grid_width_medium = 'small--one-third' %}
+                        {% assign grid_width_small = 'mobile--one-half' %}
+                      {% when 6 %}
+                        {% assign grid_width_large = 'medium-up--one-sixth' %}
+                        {% assign grid_width_medium = 'small--one-third' %}
+                        {% assign grid_width_small = 'mobile--one-half' %}
+                      {% else %}
+                        {% assign grid_width_large = 'medium-up--one-quarter' %}
+                        {% assign grid_width_medium = 'small--one-third' %}
+                        {% assign grid_width_small = 'mobile--one-half' %}
+                    {% endcase %}
+                    {% for product in recommendations.products %}
+                      {% include 'product-grid-item' %}
+                    {% endfor %}
+                  </div>
+                {%- endif -%}
+              {%- else -%}
+                <div class="related__placeholder"></div>
+              {%- endif -%}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+  {
+    "name": "Product recommendations",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "related_products_enable",
+        "label": "Show related products",
+        "info": "Dynamic recommendations change and improve with time. [Learn more](https://help.shopify.com/en/themes/development/recommended-products)",
+        "default": true
+      },
+      {
+        "type":    "range",
+        "id":      "limit",
+        "min":     1,
+        "max":     6,
+        "step":    1,
+        "label":   "Product limit",
+        "default": 4
+      },
+      {
+        "type": "text",
+        "id": "product_recommendations_heading",
+        "label": "Heading",
+        "default": "Related products"
+      }
+    ]
+  }
+{% endschema %}

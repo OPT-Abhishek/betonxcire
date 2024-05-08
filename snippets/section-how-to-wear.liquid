@@ -1,0 +1,94 @@
+{%- assign image = block.settings.image -%}
+{%- assign image_badge = block.settings.image_badge -%}
+{%- assign text_block_first = block.settings.text_block_first -%}
+{%- assign text_align = 'text-center medium-up--text-left' -%}
+{%- assign title = block.settings.title -%}
+{%- assign richtext = block.settings.richtext -%}
+{%- assign btn_link = block.settings.btn_link -%}
+{%- assign btn_text = block.settings.btn_text -%}
+{%- assign btn_style = 'text-link--grey text-link--arrow-next uppercase' -%}
+
+{%- if text_block_first -%}
+  {%- assign text_align = 'text-center medium-up--text-right' -%}
+{%- endif -%}
+
+{%- assign image_count = 0 -%}
+{%- for i in (1..4) -%}
+  {%- capture image_key -%}image_{{ i }}{%- endcapture -%}
+  {%- assign image = block.settings[image_key] -%}
+
+  {%- unless image == blank -%}
+    {%- assign image_count = image_count | plus: 1 -%}
+  {%- endunless -%}
+{%- endfor -%}
+<section class="section-double section-how-to-wear" {{ block.shopify_attributes }}>
+  <div class="section-body">
+    <div class="wrapper">
+      <div class="grid--full{% if text_block_first %} grid--rev{% endif %} medium-up--align-items-center">
+        <div class="grid__item medium-up--one-half">
+          <div
+           data-aos="fade-up"
+           data-aos-easing="linear"
+           data-aos-duration="400"
+           data-aos-delay="0">
+            <div class="how-to-wear__images text-center" data-item-count="{{ image_count }}">
+              <div class="grid grid--uniform">
+                {%- for i in (1..4) -%}
+                  {%- capture image_key -%}image_{{ i }}{%- endcapture -%}
+                  {%- capture image_caption_key -%}image_caption_{{ i }}{%- endcapture -%}
+                  {%- assign image = block.settings[image_key] -%}
+                  {%- assign image_caption = block.settings[image_caption_key] -%}
+
+                  {%- unless image == blank -%}
+                    <div class="grid__item mobile--one-half small-up--one-half">
+                      <div class="how-to-wear__image-wrap">
+                        <div
+                         class="how-to-wear__image lazyload"
+                         data-bgset="{%- include 'bgset', image: image -%}"
+                         role="img"
+                         aria-label="{{ image.alt }}"></div>
+
+                        {%- unless image_caption == blank -%}
+                          <p class="how-to-wear__image-caption">{{ image_caption | escape }}</p>
+                        {%- endunless -%}
+                      </div>
+                    </div>
+                  {%- endunless -%}
+                {%- endfor -%}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid__item medium-up--one-half">
+          <div
+           class="content-wrapper {{ text_align }}"
+           data-aos="fade-up"
+           data-aos-easing="linear"
+           data-aos-duration="400"
+           data-aos-delay="400">
+            <div class="preventOverflowContent">
+              <p class="svg-wrapper hide">
+                {%- include 'logo-rames' -%}
+              </p>
+
+              {%- unless title == blank -%}
+                <h2 class="section-title h1">{{ title | escape }}</h2>
+              {%- endunless -%}
+
+              {%- unless richtext == blank -%}
+                <div class="rte">{{ richtext }}</div>
+              {%- endunless -%}
+
+              {%- unless btn_text == blank -%}
+                <a
+                 class="{{ btn_style }}"
+                 href="{{ btn_link }}">{{ btn_text | escape }}</a>
+              {%- endunless -%}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

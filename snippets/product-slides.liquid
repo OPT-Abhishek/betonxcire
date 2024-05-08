@@ -1,0 +1,31 @@
+<div class="product__slides__arrows">
+  <div class="product__slides product-single__photos" id="ProductPhoto-{{ section.id }}">
+    {% for image in product.images %}
+      {%- assign img_api = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+      <div
+       class="product__photo{% unless forloop.first == true %} product__photo--additional{% endunless %}"
+       data-thumb="{{ image.src | img_url: 'small_cropped' }}">
+
+        {%- if settings.product_zoom_enable -%}
+          <a
+           href="{{ image | img_url: 'master' }}"
+           product-image-zoom-trigger>
+            {% include 'lazy-image' with image: image %}
+          </a>
+        {%- else -%}
+          {% include 'lazy-image' with image: image %}
+        {%- endif -%}
+      </div>
+    {% endfor %}
+  </div>
+  <div class="slideshow__arrow slideshow__arrow--prev" data-prev-arrow>{% include 'icon-caret-left' %}</div>
+  <div class="slideshow__arrow slideshow__arrow--next" data-next-arrow>{% include 'icon-caret-right' %}</div>
+</div>
+
+<div class="product__thumbs" data-product-thumbs></div>
+
+<noscript>
+  {% for image in product.images %}
+    <img src="{{ image | img_url: '900x' }}" alt="{{ image.alt | default: product.title  }}">
+  {% endfor %}
+</noscript>

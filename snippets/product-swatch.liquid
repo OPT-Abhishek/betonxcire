@@ -1,0 +1,34 @@
+{% capture option_key %}option{{ forloop.index }}{% endcapture %}
+
+<div
+ class="swatch-wrapper swatch-wrapper-{{ section_id }} swatch-wrapper--{{ option.name | handle }}"
+ data-index="option{{ forloop.index }}">
+  <div class="swatch">
+    <div class="swatch__label">{{ option.name | escape }}: <span class="swatch__label__value"></span></div>
+
+    <ul
+     class="swatch__list"
+     data-swatch-list>
+      {%- for value in option.values -%}
+        {%- assign variant_avialable = true -%}
+        {%- if product.options.size == 1 -%}
+          {%- unless product.variants[forloop.index0].available -%}
+            {%- assign variant_avialable = false -%}
+          {%- endunless -%}
+        {%- endif -%}
+        <li
+         class="swatch__item{% if option.selected_value == value %} active{% endif %}{% unless variant_avialable %} soldout{% endunless %}"
+         data-swatch-item>
+          <a
+           href="{{ variant.url | within: collection }}"
+           class="swatch__link"
+           data-value="{{ value | escape }}"
+           title="{{ value | escape }}"
+           data-swatch-link>
+            <span class="swatch__link__text">{{ value }}</span>
+          </a>
+        </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+</div>

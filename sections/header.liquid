@@ -1,0 +1,304 @@
+{%- assign header_message = section.settings.header_message -%}
+{%- assign transparent_header = false -%}
+{%- if template == 'index' and section.settings.transparent_home -%}
+    {%- assign transparent_header = true -%}
+{%- endif -%}
+
+{%- capture klaviyo_trigger -%}
+  href="#"
+  onclick="KlaviyoSubscribe.attachToModalForm('#k_id_modal',{delay_seconds: 0.01, hide_form_on_success: true, ignore_cookie: true, success_message: false});"
+{%- endcapture -%}
+{%- assign header_message = section.settings.header_message | replace: 'href="#"', klaviyo_trigger -%}
+
+<div class="klaviyo_modal" id="k_id_modal" style="display:none;">
+  <div class="klaviyo_inner">
+    <a href="#" class="klaviyo_close_modal klaviyo_header_close">×</a>
+
+    <form action="//manage.kmail-lists.com/subscriptions/subscribe" method="POST" novalidate="novalidate" class="klaviyo_subscription_form">
+
+      <input type="hidden" name="g" value="TcqEVk">
+
+      <div class="klaviyo_fieldset" style="border:0;">
+        <p class="klaviyo_header h4">Get 10% off on our Fall/Winter collection</p>
+
+        <p class="klaviyo_subheader">We'll email you the discount code.</p>
+      </div>
+
+      <div class="klaviyo_fieldset" style="border:0;">
+        <div class="klaviyo_field_group">
+          <!-- <label for="k_id_modal_$email">Email Address</label> -->
+          <input type="email" id="k_id_modal_$email" name="email" placeholder="Enter email address">
+          {%- comment -%}
+            <label for="klaviyo_form_first_name">First Name:</label>
+            <input id="klaviyo_form_first_name" type="text" name="first_name" value="" />
+
+            <label for="klaviyo_form_last_name">Last Name:</label>
+            <input id="klaviyo_form_last_name" type="text" name="last_name" value="" />
+          {%- endcomment -%}
+        </div>
+      </div>
+
+      <div class="klaviyo_fine_print"></div>
+
+      <div class="klaviyo_form_actions">
+        <button type="submit" class="_klaviyo_submit_button btn btn--full btn--large btn--splash uppercase">
+          <span>Subscribe</span>
+        </button>
+      </div>
+
+      <div class="klaviyo_below_submit" ></div>
+    </form>
+
+    <div class="error_message" ></div>
+
+    <div class="success_message" ></div>
+  </div>
+</div>
+
+<script type="text/javascript" src="//www.klaviyo.com/media/js/public/klaviyo_subscribe.js"></script>
+
+<div
+ class="header-wrapper{% if transparent_header %} header--transparent{% endif %}"
+ data-section-id="{{ section.id }}"
+ data-section-type="header">
+  {%- unless header_message == blank -%}
+    <div class="info-bar showMobile">
+      <div class="wrapper text-center">
+        <div class="info-bar__message rte">{{ header_message }}</div>
+      </div>
+    </div>
+  {%- endunless -%}
+
+  <header class="site-header" role="banner">
+    <div class="nav--desktop">
+      <div class="wrapper">
+        {% include 'nav-contents' with 'desktop' %}
+      </div>
+    </div>
+
+    <div class="nav--mobile">
+      <div class="wrapper">
+        {% include 'nav-contents' with 'mobile' %}
+      </div>
+    </div>
+  </header>
+
+  <div class="header-search" header-search>
+    <form
+     action="/search"
+     method="get"
+     class="input-group search-bar"
+     role="search">
+      {%- if settings.search_only_products -%}
+        <input type="hidden" name="type" value="product">
+      {%- endif -%}
+
+      <span class="input-group-btn">
+        <button
+         type="submit"
+         class="btn search-bar__btn icon-fallback-text uppercase">
+          <span class="search-bar__btn__icon">{% include 'icon-search' %}</span>
+          <span class="fallback-text">{{ 'general.search.submit' | t }}</span>
+        </button>
+      </span>
+
+      <input
+       type="search"
+       name="q"
+       value="{{ search.terms | escape }}"
+       placeholder="{{ 'general.search.placeholder' | t }}"
+       class="search-bar__input input-group-field"
+       aria-label="{{ 'general.search.placeholder' | t }}">
+    </form>
+
+    <span header-search-toggle>{% include 'icon-close' %}</span>
+  </div>
+
+  {%- if template.name == 'blog' and blog.title == 'Journal' -%}
+    <nav class="blog__nav">
+      <ul class="blog__nav__list">
+        <li class="blog__nav__item{% if current_tags == blank %} active{% endif %}">
+          <a class="blog__nav__link" href="{{ blog.url }}">
+            All
+          </a>
+        </li>
+
+        {%- for tag in blogs.journal.tags -%}
+          <li class="blog__nav__item{% if current_tags.first == tag %} active{% endif %}">
+            <a class="blog__nav__link" href="{{ blog.url }}/tagged/{{ tag.handle }}">
+              {{ tag }}
+            </a>
+          </li>
+        {%- endfor -%}
+      </ul>
+    </nav>
+  {%- endif -%}
+</div>
+
+
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "Organization",
+    "name": {{ shop.name | json }},
+    {% if section.settings.logo %}
+      {% assign image_size = section.settings.logo.width | append:'x' %}
+      "logo": {{ section.settings.logo | img_url: image_size | prepend: "https:" | json }},
+    {% endif %}
+    "sameAs": [
+      {{ settings.social_twitter_link | json }},
+      {{ settings.social_facebook_link | json }},
+      {{ settings.social_instagram_link | json }},
+      {{ settings.social_pinterest_link | json }},
+      {{ settings.social_youtube_link | json }},
+      {{ settings.social_vimeo_link | json }},
+      {{ settings.social_snapchat_link | json }},
+      {{ settings.social_medium_link | json }},
+      {{ settings.social_tumblr_link | json }}
+    ],
+    "url": {{ shop.url | append: page.url | json }}
+  }
+</script>
+
+{% if template.name == 'index' %}
+  {% assign potential_action_target = shop.url | append: "/search?q={search_term_string}" %}
+  <script type="application/ld+json">
+    {
+      "@context": "http://schema.org",
+      "@type": "WebSite",
+      "name": {{ shop.name | json }},
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {{ potential_action_target | json }},
+        "query-input": "required name=search_term_string"
+      },
+      "url": {{ shop.url | append: page.url | json }}
+    }
+  </script>
+{% endif %}
+
+{% schema %}
+  {
+    "name": "Header",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Top Bar"
+      },
+      {
+        "type": "richtext",
+        "id": "header_message",
+        "label": "Announcement text",
+        "info": "45 characters or less recommended"
+      },
+
+      {
+        "type": "header",
+        "content": "Header"
+      },
+      {
+        "type": "link_list",
+        "label": "Menu (Left)",
+        "id": "main_menu_linklist_left"
+      },
+      {
+        "type": "link_list",
+        "label": "Menu (Right)",
+        "id": "main_menu_linklist_right"
+      },
+
+      {
+        "type": "header",
+        "content": "Collection dropdown item #1"
+      },
+      {
+        "type": "image_picker",
+        "id": "dropdown_item_image_1",
+        "label": "Image"
+      },
+      {
+        "type": "text",
+        "id": "dropdown_item_title_1",
+        "label": "Heading"
+      },
+      {
+        "type": "url",
+        "id": "dropdown_item_link_1",
+        "label": "Link"
+      },
+      {
+        "type": "header",
+        "content": "Collection dropdown item #2"
+      },
+      {
+        "type": "image_picker",
+        "id": "dropdown_item_image_2",
+        "label": "Image"
+      },
+      {
+        "type": "text",
+        "id": "dropdown_item_title_2",
+        "label": "Heading"
+      },
+      {
+        "type": "url",
+        "id": "dropdown_item_link_2",
+        "label": "Link"
+      },
+
+      {
+        "type": "header",
+        "content": "Collection dropdown item #3"
+      },
+      {
+        "type": "image_picker",
+        "id": "dropdown_item_image_3",
+        "label": "Image"
+      },
+      {
+        "type": "text",
+        "id": "dropdown_item_title_3",
+        "label": "Heading"
+      },
+      {
+        "type": "url",
+        "id": "dropdown_item_link_3",
+        "label": "Link"
+      },
+
+      {
+        "type": "checkbox",
+        "id": "header_enable_account",
+        "default": true,
+        "label": "Show account link in header"
+      },
+      {
+        "type": "checkbox",
+        "id": "header_enable_search",
+        "default": true,
+        "label": "Show search in header"
+      },
+      {
+        "type": "checkbox",
+        "id": "search_only_products",
+        "label": "Only search products"
+      },
+      {
+        "type": "header",
+        "content": "Transparent header"
+      },
+      {
+        "type": "checkbox",
+        "id": "transparent_home",
+        "label": "Transparent on the home page",
+        "default": false
+      },
+      {
+        "type": "color",
+        "id": "transparent_text_color",
+        "label": "Text and icons color",
+        "default": "#ffffff"
+      }
+    ]
+  }
+{% endschema %}

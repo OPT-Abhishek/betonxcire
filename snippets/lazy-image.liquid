@@ -1,0 +1,29 @@
+{%- if image -%}
+  {%- assign img_object = image -%}
+  {%- assign img_small = image | img_url: '18x' -%}
+  {%- assign img_api = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+{%- else -%}
+  {%- assign img_object = 'blank.svg' | asset_url -%}
+  {%- assign img_small =  'blank.svg' | asset_url -%}
+  {%- assign img_api = 'blank.svg' | asset_url -%}
+{%- endif -%}
+
+{%- capture image_alt -%}{%- unless default_image_alt == blank -%}{{ image.alt | default: default_image_alt }}{%- else -%}{{ image.alt }}{%- endunless -%}{%- endcapture -%}
+
+<div class="image-wrapper">
+  <div
+   class="lazy-image"
+   style="padding-top:{{ 1 | divided_by: image.aspect_ratio | times: 100}}%; background-image: url('{{ image | img_url: '1x1' }}');">
+    <img
+     class="lazyload fade-in"
+     alt="{{ image_alt }}"
+     data-src="{{ img_api }}"
+     data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048, 2450, 2700, 3000, 3350, 3750, 4100, 4480]"
+     data-aspectratio="{{ image.aspect_ratio }}"
+     data-parent-fit="cover"
+     data-sizes="auto"/>
+  </div>
+  <noscript>
+    <img src="{{ image | img_url: '1440x' }}" alt="{{ image_alt }}" class="responsive-wide-image"/>
+  </noscript>
+</div>

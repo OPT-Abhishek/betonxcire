@@ -1,0 +1,17 @@
+<ul class="social-icons inline-list">
+  {%- assign social_accounts = 'Facebook, Twitter, Pinterest, Instagram, Snapchat, Tumblr, YouTube, Vimeo, Medium, ' | split: ', ' -%}
+  {%- for social in social_accounts -%}
+    {%- assign social_handle = social | handleize -%}
+    {% capture social_link %}social_{{ social_handle }}_link{% endcapture %}
+    {% capture social_icon %}icon-{{ social_handle }}{% endcapture %}
+
+    {%- if settings[social_link] != blank -%}
+      <li>
+        <a href="{{ settings[social_link] }}" title="{{ social }}">
+          {% include social_icon %}
+          <span class="visually-hidden">{{ social }}</span>
+        </a>
+      </li>
+    {%- endif -%}
+  {%- endfor -%}
+</ul>

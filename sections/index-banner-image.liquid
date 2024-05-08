@@ -1,0 +1,132 @@
+{%- include 'section-banner-image' with
+  section_id: section.id,
+  image: section.settings.image,
+  image_mobile: section.settings.image_mobile,
+  height: section.settings.height,
+  overlay_opacity: section.settings.overlay_opacity,
+  parallax: section.settings.parallax,
+  title: section.settings.title,
+  richtext: section.settings.description,
+  text_align: section.settings.text_align,
+  text_color: section.settings.text_color,
+  btn_text: section.settings.btn_text,
+  btn_link: section.settings.btn_link,
+  btn_style: section.settings.btn_style -%}
+
+
+{% schema %}
+  {
+    "name": "Banner",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "image",
+        "label": "Image"
+      },
+      {
+        "type": "select",
+        "id": "height",
+        "label": "Section height",
+        "default": "use_screen_two_thirds",
+        "options": [
+          { "value": "use_screen_full", "label": "Full screen height"},
+          { "value": "use_screen_two_thirds", "label": "Tall"},
+          { "value": "use_screen_one_half", "label": "Medium"},
+          { "value": "use_screen_one_third", "label": "Short"},
+          { "value": "use_image", "label": "Image height"}
+        ]
+      },
+      {
+        "type":    "range",
+        "id":      "overlay_opacity",
+        "min":     0,
+        "max":     100,
+        "step":    5,
+        "label":   "Image overlay opacity",
+        "info":    "Increase contrast for legible text.",
+        "default": 15
+      },
+      {
+        "type": "checkbox",
+        "id": "parallax",
+        "default": false,
+        "label": "Enable parallax scroll"
+      },
+      {
+        "type": "header",
+        "content": "Text"
+      },
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Headline",
+        "default": "Image with text overlay"
+      },
+      {
+        "type": "textarea",
+        "id": "description",
+        "label": "Description",
+        "default": "This area is used to describe your store."
+      },
+      {
+        "type": "select",
+        "id": "text_align",
+        "label": "Alignment",
+        "default": "text-center",
+        "options": [
+          { "value": "text-left", "label": "Align Left"},
+          { "value": "text-center", "label": "Align Center"},
+          { "value": "text-right", "label": "Align Right"}
+        ]
+      },
+      {
+        "type": "select",
+        "id": "text_color",
+        "label": "Text color",
+        "default": "color--white",
+        "options": [
+          { "value": "color--white", "label": "White"},
+          { "value": "color--light", "label": "Light"},
+          { "value": "color--splash", "label": "Accent"},
+          { "value": "color--dark", "label": "Dark"}
+        ]
+      },
+      {
+        "type": "header",
+        "content": "Button"
+      },
+      {
+        "type": "text",
+        "id": "btn_text",
+        "label": "Text",
+        "default": "View products",
+        "info": "Leave blank to link entire image"
+      },
+      {
+        "type": "url",
+        "id": "btn_link",
+        "label": "Link"
+      },
+      {
+        "type": "select",
+        "id": "btn_style",
+        "label": "Button style",
+        "default": "text-link text-link--arrow-next uppercase",
+        "options": [
+          { "value": "text-link text-link--arrow-next uppercase", "label": "Text link" },
+          { "value": "btn btn--large btn--camel uppercase", "label": "Camel"},
+          { "value": "btn btn--large btn--blue uppercase", "label": "Blue"},
+          { "value": "btn btn--large btn--white uppercase", "label": "White"},
+          { "value": "btn btn--large btn--black uppercase", "label": "Black"},
+          { "value": "btn btn--large btn--clear uppercase", "label": "Clear"}
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Image with text overlay",
+        "category": "Image"
+      }
+    ]
+  }
+{% endschema %}

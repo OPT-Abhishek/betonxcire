@@ -1,0 +1,168 @@
+{%- assign main_menu_linklist_left = section.settings.main_menu_linklist_left -%}
+{%- assign main_menu_linklist_right = section.settings.main_menu_linklist_right -%}
+{%- assign header_enable_account = section.settings.header_enable_account -%}
+{%- assign header_enable_search = section.settings.header_enable_search -%}
+
+{%- capture header_logo -%}
+  <div class="logo-wrapper">
+    {%- capture logo_content -%}
+      <a class="header-logo__link" href="/">
+        {%- include 'logo-bc' -%}
+      </a>
+    {%- endcapture -%}
+
+    {%- if template.name == 'index' -%}
+      <h1 class="h4 header-logo">{{ logo_content }}</h1>
+    {%- else -%}
+      <div class="h4 header-logo">{{ logo_content }}</div>
+    {%- endif -%}
+  </div>
+{%- endcapture -%}
+
+{% if nav-contents == 'mobile' %}
+
+  <div class="mobile-wrapper">
+    {{ header_logo }}
+
+    <div class="header-cart">
+      <a href="/cart" cart-toggle>
+        <span class="cartIcon">{% include 'icon-bag' %}</span>
+        <span class="cartTitle">{{ 'layout.cart.title' | t }}</span>
+        <span class="cartCount{% if cart.item_count < 1 %} hidden-count{% endif %}">{{ cart.item_count }}</span>
+      </a>
+    </div>
+
+    <a
+     href
+     class="menuToggle header-hamburger"
+     aria-label="{{ 'general.accessibility.menu' | t }}"
+     aria-haspopup="true"
+     aria-expanded="false"
+     aria-controls="ariaHamburger">
+      <span class="hamburger-bar"></span>
+      <span class="hamburger-bar"></span>
+      <span class="hamburger-bar"></span>
+    </a>
+
+    {%- if header_enable_search -%}
+      <a href="/search" class="header-search-toggle" header-search-toggle>
+        <span class="visually-hidden">Search</span>
+        <span class="nav__item__icon">{%- include 'icon-search' -%}</span>
+      </a>
+    {%- endif -%}
+
+    {%- if shop.customer_accounts_enabled and header_enable_account -%}
+      <a
+       href="/account"
+       class="header-account-toggle"
+       {% unless template contains 'customers/' %}
+         account-toggle
+       {% endunless %}>
+        <span class="visually-hidden">{%- if customer -%}{{ 'customer.account.title' | t }}{%- else -%}Log In{%- endif -%}</span>
+        <span class="nav__item__icon">{%- include 'icon-account' -%}</span>
+      </a>
+    {%- endif -%}
+  </div>
+
+  <nav class="header-menu">
+    <ul
+     id="ariaHamburger"
+     class="main-menu accessibleNav"
+     aria-label="primary">
+      {% if main_menu_linklist_left %}
+        {% assign main_menu_linklist = main_menu_linklist_left %}
+      {% else %}
+        {% assign main_menu_linklist = 'main-menu' %}
+      {% endif %}
+      {% for link in linklists[main_menu_linklist].links %}
+        {% include 'nav-item' %}
+      {% endfor %}
+
+      {%- if main_menu_linklist_right -%}
+        {%- assign main_menu_linklist = main_menu_linklist_right -%}
+        {%- for link in linklists[main_menu_linklist].links -%}
+          {%- include 'nav-item' with top_parent_link: link -%}
+        {%- endfor -%}
+      {%- endif -%}
+
+      {%- comment -%}
+        <li class="nav__item nav__item--currency-selector">
+          {%- include 'currency-selector' with id: 'mobile-currency-selector' -%}
+        </li>
+      {%- endcomment -%}
+    </ul>
+  </nav>
+
+{%- else -%}
+
+  <div class="grid grid--condensed small-up--align-items-center{% comment %}{% endcomment %}">
+    <div class="grid__item grid__item--left five-twelfths">
+      {%- if main_menu_linklist_left -%}
+        {%- assign main_menu_linklist = main_menu_linklist_left -%}
+      {%- else %}
+        {%- assign main_menu_linklist = 'main-menu' -%}
+      {%- endif -%}
+      <div class="header-menu header-menu--left nav-wrapper text-left">
+        <ul class="main-menu main-menu--left accessibleNav">
+          {%- for link in linklists[main_menu_linklist].links -%}
+            {%- include 'nav-item' with top_parent_link: link -%}
+          {%- endfor -%}
+        </ul>
+      </div>
+    </div>
+
+    <div class="grid__item grid__item--center two-twelfths text-center">
+      {{ header_logo }}
+    </div>
+
+    <div class="grid__item grid__item--right five-twelfths">
+      <div class="header-menu header-menu--right nav-wrapper text-right">
+        <ul class="main-menu main-menu--right accessibleNav">
+          {%- if main_menu_linklist_right -%}
+            {%- assign main_menu_linklist = main_menu_linklist_right -%}
+            {%- for link in linklists[main_menu_linklist].links -%}
+              {%- include 'nav-item' with top_parent_link: link -%}
+            {%- endfor -%}
+          {%- endif -%}
+
+          {%- comment -%}
+            <li class="nav__item nav__item--currency-selector">
+              {%- include 'currency-selector' with id: 'desktop-currency-selector' -%}
+            </li>
+          {%- endcomment -%}
+
+          {%- if header_enable_search -%}
+            <li class="nav__item nav__item--search">
+              <a href="/search" class="header-search-toggle" header-search-toggle>
+                <span class="visually-hidden">Search</span>
+                <span class="nav__item__icon">{%- include 'icon-search' -%}</span>
+              </a>
+            </li>
+          {%- endif -%}
+
+          {%- if shop.customer_accounts_enabled and header_enable_account -%}
+            <li
+             class="nav__item nav__item--account"
+             {% unless template contains 'customers/' %}
+               account-toggle
+             {% endunless %}>
+              <a href="/account" class="header-account-toggle">
+                <span class="visually-hidden">{%- if customer -%}{{ 'customer.account.title' | t }}{%- else -%}Log In{%- endif -%}</span>
+                <span class="nav__item__icon">{%- include 'icon-account' -%}</span>
+              </a>
+            </li>
+          {%- endif -%}
+
+          <li class="nav__item nav__item--cart">
+            <a href="/cart" class="header-cart" cart-toggle>
+              <span class="visually-hidden">{{ 'layout.cart.title' | t }}</span>
+              <span class="cartIcon">{%- include 'icon-bag' -%}</span>
+              <span class="cartCount{% if cart.item_count < 1 %} hidden-count{% endif %}">{{ cart.item_count }}</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+{%- endif -%}

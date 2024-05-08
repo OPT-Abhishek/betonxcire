@@ -1,0 +1,33 @@
+{%- if current_tags.size > 0 -%}
+  <div class="collection__selected">
+    {%- if current_tags.size > 1 -%}
+      <p class="collection__selected__heading">
+        <span>Selected:</span><a class="collection__selected__clear" href="/collections/{{ collection.handle }}/">Clear all</a>
+      </p>
+    {%- endif -%}
+
+    <ul class="collection__selected__list">
+      {%- for tag in current_tags -%}
+        {%- capture removed_tag_url -%}
+          {%- for current_tag in current_tags -%}
+            {%- unless tag == current_tag -%}+{{ current_tag | handle }}{%- endunless -%}
+          {%- endfor -%}
+        {%- endcapture -%}
+
+        {%- assign tag_label = tag -%}
+        {%- if tag contains ': ' -%}
+          {%- assign tag_label = tag | split: ': ' | last -%}
+        {%- endif -%}
+        {%- assign removed_tag_url_size = removed_tag_url | size -%}
+        <li class="collection__selected__item">
+          <a
+           href="/collections/{{ collection.handle }}/{{ removed_tag_url | slice: 1, removed_tag_url_size }}"
+           class="collection__selected__link"
+           title="✕ {{ tag_label }}">
+            {{ tag_label }}
+          </a>
+        </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+{%- endif -%}

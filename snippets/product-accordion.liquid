@@ -1,0 +1,186 @@
+<!-- /snippets/product-tabs.liquid -->
+
+{%- assign tab_headings = "" -%}
+{%- assign tab_contents = "" -%}
+{%- assign product_description_split = product.description | replace: '<p>[split]</p>', '[split]' | replace: '[split]', '' | replace: '<h6></h6>', '' -%}
+
+{%- for block in section.blocks -%}
+  {%- if block.type == "tab_description" -%}
+    {% comment %}
+      Replace the heading deliminator with a string that is highly unlikely to occur naturally [!ヽ(´ー｀)/!]
+    {% endcomment %}
+    {%- assign product_description_split = product_description_split | replace: '<h6>', '[!ヽ(´ー｀)/!]' |  replace: '</h6>', '[!ヽ(´ー｀)/!]' | split: '[!ヽ(´ー｀)/!]' -%}
+    {%- for item in product_description_split -%}
+      {% comment %}
+        The zero item is the product description, after that tab headings are odd and contents are even.
+      {% endcomment %}
+      {%- assign odd_mod = forloop.index0 | modulo:2 -%}
+      {%- if odd_mod == 0 -%}
+        {%- unless forloop.index0 == 0 -%}
+          {%- assign tab_contents = tab_contents | append: item | append: '[!ヽ(´ー｀)/!]' -%}
+        {%- endunless -%}
+      {%- endif -%}
+      {%- if odd_mod == 1 -%}
+        {%- assign tab_headings = tab_headings | append: item | append: '[!ヽ(´ー｀)/!]' -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{%- assign tab_headings = tab_headings | split: '[!ヽ(´ー｀)/!]' -%}
+{%- assign tab_contents = tab_contents | split: '[!ヽ(´ー｀)/!]' -%}
+
+{%- assign default_description_tab = false -%}
+{%- unless product.description contains '<h6>' or product.description == blank -%}
+  {%- assign default_description_tab = true -%}
+{%- endunless -%}
+
+{%- comment -%}
+<div product-tabs>
+  <div class="tabs__nav">
+    <ul class="tabs__nav__list" tabs-nav-list>
+      {%- assign count = 0 -%}
+
+      {%- if default_description_tab -%}
+        <li class="tabs__nav__item" tabs-nav-item>
+          <a
+           class="tabs__nav__link"
+           tabs-nav-link
+           data-tab-id="{{ count }}">Description</a>
+        </li>
+        {%- assign count = count | plus: 1 -%}
+      {%- endif -%}
+
+      {%- for block in section.blocks -%}
+        {%- if block.type == "tab_description" -%}
+          {%- for item in tab_headings -%}
+            <li class="tabs__nav__item" tabs-nav-item>
+              <a
+               class="tabs__nav__link"
+               tabs-nav-link
+               data-tab-id="{{ count }}"
+               {% if forloop.index0 == 0 %}
+                 data-block-id="{{ block.id }}"
+                 {{ block.shopify_attributes }}
+               {% endif %}>{{ item }}</a>
+            </li>
+            {%- assign count = count | plus: 1 -%}
+          {%- endfor -%}
+        {%- else -%}
+          <li class="tabs__nav__item" tabs-nav-item>
+            <a
+             class="tabs__nav__link"
+             tabs-nav-link
+             data-tab-id="{{ count }}"
+             data-block-id="{{ block.id }}"
+             {{ block.shopify_attributes }}>{{ block.settings.title }}</a>
+            {%- assign count = count | plus: 1 -%}
+          </li>
+        {%- endif -%}
+      {%- endfor -%}
+    </ul>
+  </div>
+
+  {%- assign count = 0 -%}
+
+  {%- if default_description_tab -%}
+    <div class="tabs__content" tabs-content="{{ count }}">
+      <div class="rte">
+        {{ product.description }}
+      </div>
+    </div>
+    {%- assign count = count | plus: 1 -%}
+  {%- endif -%}
+
+  {%- for block in section.blocks -%}
+    {%- if block.type == "tab_description" -%}
+      {%- for item in tab_contents -%}
+        <div class="tabs__content" tabs-content="{{ count }}">
+          <div class="rte">
+            {{ item }}
+          </div>
+        </div>
+        {%- assign count = count | plus: 1 -%}
+      {%- endfor -%}
+    {%- elsif block.type == "tab_page" -%}
+      <div class="tabs__content" tabs-content="{{ count }}">
+        <div class="rte">
+          {% assign tab_page = pages[block.settings.raw_content] %}
+          {%- if tab_page.content != blank -%}
+            {{ tab_page.content }}
+          {%- else -%}
+            {{ 'home_page.onboarding.no_content' | t }}
+          {%- endif -%}
+        </div>
+      </div>
+      {%- assign count = count | plus: 1 -%}
+    {%- else -%}
+      <div class="tabs__content" tabs-content="{{ count }}">
+        <div class="rte">
+          {{ block.settings.raw_content }}
+        </div>
+      </div>
+      {%- assign count = count | plus: 1 -%}
+    {%- endif -%}
+  {%- endfor -%}
+</div>
+{%- endcomment -%}
+
+<div product-accordion>
+  <div class="accordion" accordion>
+    {%- if default_description_tab -%}
+      <div class="accordion__item" accordion-item>
+        <h4 class="accordion__toggle" accordion-toggle>
+          Description<span class="accordion__icon"><i class="icon-close"></i></span>
+        </h4>
+
+        <div class="accordion__content" accordion-content>
+          <div class="rte">{{ product.description }}</div>
+        </div>
+      </div>
+    {%- endif -%}
+
+    {%- for block in section.blocks -%}
+      {%- if block.type == "tab_description" -%}
+        {%- for item in tab_headings -%}
+          <div
+           class="accordion__item"
+           accordion-item
+           {% if forloop.index0 == 0 %}
+             data-block-id="{{ block.id }}"
+             {{ block.shopify_attributes }}
+           {% endif %}>
+            <h4 class="accordion__toggle" accordion-toggle>
+              {{ item }}<span class="accordion__icon"><i class="icon-close"></i></span>
+            </h4>
+
+            <div class="accordion__content" accordion-content>
+              <div class="rte">{{ tab_contents[forloop.index0] }}</div>
+            </div>
+          </div>
+        {%- endfor -%}
+      {%- else -%}
+        <div
+         class="accordion__item"
+         accordion-item
+         data-block-id="{{ block.id }}"
+         {{ block.shopify_attributes }}>
+          <h4 class="accordion__toggle" accordion-toggle>
+            {{ block.settings.title }}<span class="accordion__icon"><i class="icon-close"></i></span>
+          </h4>
+
+          <div class="accordion__content" accordion-content>
+            <div class="rte">
+              {%- assign tab_page = pages[block.settings.raw_content] -%}
+              {%- if tab_page.content != blank -%}
+                {{ tab_page.content }}
+              {%- else -%}
+                {{ block.settings.raw_content }}
+              {%- endif -%}
+            </div>
+          </div>
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+</div>

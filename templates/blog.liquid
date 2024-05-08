@@ -1,0 +1,50 @@
+{%- assign blog_grid = 'mobile--one-full small--one-half medium-up--one-third' -%}
+{%- assign blog_pagination = 7 -%}
+
+<section class="section-blog">
+  <div class="blog">
+    <div class="section-body">
+      <div class="blog__header">
+        <div class="wrapper">
+          <h1 class="section-title text-center">
+            <span class="section-title__logo">{% include 'logo-rames' %}</span>
+            {{ blog.title }}
+          </h1>
+
+          {%- comment -%}
+            {%- if current_tags -%}
+              <h2 class="text-center h5">{{ current_tags.first }}</h2>
+            {%- endif -%}
+          {%- endcomment -%}
+        </div>
+      </div>
+
+      <div class="wrapper--full">
+        <div class="grid">
+          <div class="grid__item one whole">
+            {%- paginate blog.articles by blog_pagination -%}
+              <div class="grid grid--uniform">
+                {%- assign article = blog.articles.first -%}
+                {%- include 'article-grid-item' with article: article, blog_grid: 'article-grid-item--featured' -%}
+              </div>
+
+              <div class="grid grid--uniform">
+                {%- for article in blog.articles offset: 1-%}
+                  {%- include 'article-grid-item' -%}
+                {%- endfor -%}
+              </div>
+
+              {%- if paginate.pages > 1 -%}
+                <div class="text-center">
+                  {% include 'pagination' %}
+                </div>
+              {%- endif -%}
+            {%- endpaginate -%}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% include 'section-discover-our-shapes' %}
