@@ -1,14 +1,14 @@
 <!doctype html>
 <html class="no-js" lang="{{ shop.locale }}">
 <head>
-  
+  {% render 'header_file' %}
   <!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-5B6WGHT');</script>
-<!-- End Google Tag Manager -->
+  <script type="lazyload_int">(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-5B6WGHT');</script>
+  <!-- End Google Tag Manager -->
   
   {% render 'ultimate-datalayer' %}
   
@@ -27,6 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   {% include 'social-meta-tags' %}
 
   {% include 'critical-css' %}
+  
   {% comment %}
   <!-- CSS ================================================================== -->
   {{ 'theme.scss.css' | asset_url | stylesheet_tag }}
@@ -51,11 +52,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     {{ 'shopify_common.js' | shopify_asset_url | script_tag }}
   {% endif %}
 
-  <!-- Header hook for plugins ============================================== -->
+    <!-- Header hook for plugins ============================================== -->
 
-{% comment %} remove URLs from asyncLoad {% endcomment %}
+    {% comment %} remove URLs from asyncLoad {% endcomment %}
 
-  {% assign content_for_header = content_for_header | remove: "https:\/\/static.klaviyo.com\/onsite\/js\/klaviyo.js?company_id=WcjhLR\u0026shop=betonxcire.myshopify.com" %}
+    {% assign content_for_header = content_for_header | remove: "https:\/\/static.klaviyo.com\/onsite\/js\/klaviyo.js?company_id=WcjhLR\u0026shop=betonxcire.myshopify.com" %}
 
     {% assign content_for_header = content_for_header | remove: "https:\/\/static.klaviyo.com\/onsite\/js\/klaviyo.js?company_id=SQWpuv\u0026shop=betonxcire.myshopify.com" %}
 
@@ -69,7 +70,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
     {% assign content_for_header = content_for_header | remove: "https:\/\/shopwebapp.dpd.fr\/shopify\/js\/dpd_maps.js?shop=betonxcire.myshopify.com" %}
 
- {% assign urls_to_remove = '
+    {% assign urls_to_remove = '
 	  https:\/\/static.klaviyo.com\/onsite\/js\/klaviyo.js?company_id=Tymsr5\u0026shop=betonxcire.myshopify.com,
       https:\/\/static.klaviyo.com\/onsite\/js\/klaviyo.js?company_id=WcjhLR\u0026shop=betonxcire.myshopify.com,
       https:\/\/static.klaviyo.com\/onsite\/js\/klaviyo.js?company_id=SQWpuv\u0026shop=betonxcire.myshopify.com
@@ -80,17 +81,31 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 	  | strip_newlines
 	  | replace: ' ', ''
 	  | split: ','
-  %}
+    %}
 
-  {% for url in urls_to_remove %}
-  {% assign content_for_header = content_for_header | remove: url %}
-  {% endfor %}
+    {% for url in urls_to_remove %}
+    {% assign content_for_header = content_for_header | remove: url %}
+    {% endfor %}
   
-  {{ content_for_header }}
+    {%- if request.design_mode or template contains 'cart' or template contains 'checkout' -%}
+            {{ content_for_header }}
+    {%- else -%}
+            {% capture content_for_header2 %}{{ content_for_header }}{% endcapture %}
+            {{ content_for_header2 | replace: ' defer="defer" ', ' type="lazyload_int" ' | replace: " src=", " data-src="| replace: "DOMContentLoaded", "w3-DOMContentLoaded" | replace: "window.addEventListener('load', asyncLoad, false);", "window.addEventListener('w3-DOMContentLoaded', asyncLoad, false);" | replace: "addEventListener('load', prefetchAssets);", "addEventListener('w3-DOMContentLoaded', prefetchAssets);" }}
+            <script>var trekkie=[];trekkie.integrations=!0;window.BOOMR={},window.BOOMR.version=true;</script>
+    {%- endif -%}
 
- {% comment %} inject app scripts after user interaction {% endcomment %}
+   {% comment %}
+    inject app scripts after user interaction
+   {% endcomment %}
 
-  <script>
+    {% if template contains "index" %}
+		  <link rel="preload" href="{{ 'theme.scss.css' | asset_url }}" as="style" />
+	{% else %}
+		  {% render 'theme-css' %}
+	{% endif %}
+  
+  <script type="lazyload_int">
     let scriptUrls = {{ urls_to_remove | json }};
 
     const injectScripts = (urls) => {
@@ -112,12 +127,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       scriptUrls.length = 0;
     }
 
-
 	// Add event listeners for click, scroll, and keydown
 	document.addEventListener('click', () => injectScripts(scriptUrls));
 	window.addEventListener('scroll', () => injectScripts(scriptUrls));
 	document.addEventListener('keydown', () => injectScripts(scriptUrls));
-    
   </script>
   
   {% render 'weglot_hreftags' %}
@@ -125,10 +138,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   {%- render 'bold-common' -%}
 
   <!-- Just Button  -->
-  <script src="https://checkout-button-shopify.vercel.app/just-pay-button.js" type="module"></script>
-  <link  href="https://checkout-button-shopify.vercel.app/styles.css" rel="stylesheet" crossorigin>
+  <script type="lazyload_int" data-src="https://checkout-button-shopify.vercel.app/just-pay-button.js" data-w3-type="module"></script>
+  <link data-href="https://checkout-button-shopify.vercel.app/styles.css" rel="stylesheet">
   <!-- End of Just Button  -->
-  
+  {% render 'custom-css' %}
 </head>
 
 <body
@@ -137,7 +150,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
  data-animations="{{ settings.animations_enable }}">
 
   <a class="in-page-link visually-hidden skip-link" href="#MainContent">{{ 'general.accessibility.skip_to_content' | t }}</a>
-
   {% section 'header' %}
 
   <main class="main-content" id="MainContent" role="main">
@@ -157,13 +169,20 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   {% comment %}
   {% endcomment %}
   <!-- CSS ================================================================== -->
-  {{ 'theme.scss.css' | asset_url | stylesheet_tag }}
+  
+ 
+    {% if template contains "index" %}
+		  <link href="{{ 'theme.scss.css' | asset_url }}" rel="stylesheet"/>
+	{% else %}
+		  <link data-href="{{ 'theme.scss.css' | asset_url }}" rel="stylesheet"/>
+	{% endif %}
 
   <!-- Javascript ============================================================== -->
-  <script src="{{ 'theme.js' | asset_url }}" defer="defer"></script>
+ 
+  <script src="{{ 'theme.js' | asset_url }}" defer="defer"></script>	
 
   <!-- Klaviyo -->
-  <script async type="text/javascript" src="https://static.klaviyo.com/onsite/js/klaviyo.js?company_id=Tymsr5"></script>
+  <script type="lazyload_int" data-src="https://static.klaviyo.com/onsite/js/klaviyo.js?company_id=Tymsr5"></script>
   {%- comment -%}
   <!-- Klaviyo ============================================================== -->
   <script src="https://a.klaviyo.com/media/js/onsite/onsite.js"></script>
@@ -204,6 +223,18 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   </script>
   {%- endcomment -%}
 
+  <script type="lazyload_int">
+		setTimeout(function() {
+            var lazyVideos = document.querySelectorAll("video");
+            lazyVideos.forEach(function(lazyVid) {
+              lazyVid.load();
+              lazyVid.muted= true;
+              lazyVid.play();
+            });
+		});
+</script>
+
   {%- render 'bold-currency-converter' -%}
+  {% render 'footer_file' %}
 </body>
 </html>
